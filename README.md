@@ -11,6 +11,9 @@ git clone https://gitee.com/yuxinyu0503/software-engineering.git
 ```
 ### 环境依赖
 1.  python 3.8
+```shell
+pip install -r requirements.txt
+```
 
 #### pip list
 ```shell
