@@ -41,11 +41,13 @@ wheel              0.44.0
 1.  修改software-engineering/settings.py中的DEBUG为True
 2.  python manage.py runserver
 ```
-#### 服务器部署
+#### 服务器部署(未完全实现)
 1.  修改software-engineering/settings.py中的DEBUG为False
-2.  python manage.py runserver 0.0.0.0:8000
+2.  python manage.py runserver 0.0.0.0:8000 --insecure
 3.  使用cmd命令行输入：ipconfig ，查看本机ip（一般为无线局域网适配器 WLAN:的ipv4地址）
-4.  在浏览器中输入：http://本机ip:8000/ 即可访问
+4.  在浏览器中输入：http://本机ip:8000/ 即可访问----->可通过局域网访问，不可注册
+5.  注册时，需要打开VPN？以确保能够获取公网IP？----->可通过局域网访问，可以注册
+6.  似乎需要安装 Nginx 和 Gunicorn才能真正的部署到公网？？？
 
 #### 辅助工具
 1.  https://sqlitebrowser.org/dl/   用于下载查看数据库的工具

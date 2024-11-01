@@ -17,8 +17,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from HustRava_app import views
+
+#TODO:需要在此py文件中添加网页子页的url导航
+#如：    path('login/', views.login, name="login"),                                  # 登录 GET/POST
+#       path('register/', views.register, name="register"),                          # 注册 GET/POST
+
 admin.autodiscover()
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # path('test_run/',views.template_run_test),
 ]
+
