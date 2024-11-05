@@ -13,3 +13,10 @@
 - [ ] 软件测试相关理论与方法
 - [ ] 软件项目的功能测试与性能测试；
 - [ ] 收集用户反馈
+
+## 开发中需要更改的py文件：
+- ./urls.py: 添加新的url，大概对于每个html页面，需要添加一次
+- ./HustRava_app/models.py: 添加新的数据库模型
+- ./HustRava_app/views.py: 添加新的视图函数
+- ./HustRava_app/templates/HustRava_app/xxx.html: 添加新的html页面
+- ./HustRava_app/static/: 添加新的css样式表、js文件等在html文件中需要用到的元素

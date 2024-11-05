@@ -3,7 +3,7 @@
 import os
 import sys
 
-
+# 不需要更改，这里是命令行启动整个项目的入口
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'HustRava.settings')
