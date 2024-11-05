@@ -4,14 +4,17 @@ from django.db import models
 #TODO: 存放创建的类，如帖子类、用户类、回复类、
 # 用户类
 class User(models.Model):
+    is_staff = models.BooleanField(default=False)
     name = models.CharField(max_length=30)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=30)
     created_at = models.DateTimeField(auto_now_add=True)
-    sex = models.BooleanField(default=True) #  性别字段，True为男，False为女
-    age = models.IntegerField(default=0) # 年龄字段
-    avatar = models.ImageField(upload_to='avatars/', default='avatars/default.jpg') # 头像字段
-    posts = models.ManyToManyField('Post', related_name = "users")
+    # 不重要的暂时隐藏
+    # sex = models.BooleanField(default=True) #  性别字段，True为男，False为女
+    # age = models.IntegerField(default=0) # 年龄字段
+    # avatar = models.ImageField(upload_to='avatars/', default='avatars/default.jpg') # 头像字段
+    def __str__(self):
+        return self.name
 
 class Post(models.Model):
     title = models.CharField(max_length=100)
@@ -20,6 +23,8 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey('User', on_delete = models.CASCADE, related_name = "posts")
     like_nums = models.IntegerField(default = 0)
+    def __str__(self):
+        return self.title
     # comments =
 
 # 回复类
