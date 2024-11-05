@@ -16,7 +16,7 @@ from django.utils import timezone
 # Home view
 def index(request):
     posts = Post.objects.all().order_by('-created_at')
-    return render(request, 'home.html', {'posts': posts})
+    return render(request, 'index.html', {'posts': posts})
 
 
 def register(request):
@@ -26,18 +26,37 @@ def register(request):
             del request.session['logged_in_user']
         return render(request, 'register.html')
     elif request.method == "POST":
-        form_username = request.POST.get('username')
+        form_email = request.POST.get('email')
         form_password = request.POST.get('password')
 
-        if form_username == "" or form_password == "":
+        if form_email == "" or form_password == "":
             return render(request, 'forum_app/register.html', {'error': '请填写完整信息'})
 
-        if len(User.objects.filter(user_name = form_username)) != 0:
+        if len(User.objects.filter(email = form_email)) != 0:
             return render(request, 'forum_app/register.html', {'error': '用户已存在'})
 
-        user = User(name = form_username, password = form_password)
+        user = User(email = form_email, password = form_password)
         user.save()
         return redirect('/login/')
+
+def login(request):
+    """ 登录 GET/POST """
+    if request.method == "GET":
+        # 如果已经登录, 就退出登录 (手动滑稽)
+        if "logged_in_user" in request.session:
+            del request.session['logged_in_user']
+        return render(request, 'login.html')
+    elif request.method == "POST":
+        form_email = request.POST.get('email')
+        form_password = request.POST.get('password')
+
+        user = User.objects.filter(email=form_email, password=form_password).first()
+        if user:
+            request.session['logged_in_user'] = user.user_name
+            return redirect('/')
+        else:
+            return render(request, 'login.html', {'error': '用户名或密码错误'})
+
 
 # Post Detail view
 def post_detail(request, post_id):

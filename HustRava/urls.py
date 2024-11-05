@@ -29,7 +29,8 @@ urlpatterns = [
     path('admin/', admin.site.urls), # Admin page
 
     path('', views.index, name = 'index'),  # Homepage view
-    path('register/', views.register, name = "register")
+    path('register/', views.register, name = "register"),
+    path('login/', views.login, name="login"),                                  # 登录 GET/POST
     #path('posts/', views.post_list, name = 'post_list'),  # List of posts
     #path('post/<int:id>/', views.post_detail, name = 'post_detail'),  # Post detail
     #path('post/new/', views.create_post, name = 'create_post'),  # Form to create a post

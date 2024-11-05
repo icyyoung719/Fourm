@@ -1,3 +1,6 @@
+import string
+import random
+
 from django.db import models
 
 # Create your models here.
@@ -5,7 +8,7 @@ from django.db import models
 # 用户类
 class User(models.Model):
     is_staff = models.BooleanField(default=False)
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30,default = "User_".join(random.choice(string.ascii_letters) for _ in range(10)))
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=30)
     created_at = models.DateTimeField(auto_now_add=True)
