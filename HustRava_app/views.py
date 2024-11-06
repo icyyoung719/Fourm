@@ -142,23 +142,24 @@ def comment(request, post_id):
 
 
 def user(request, user_email):
-    """ 用户 GET """
-    users = list(User.objects.filter(email=user_email))
-    if len(users) == 0:
+    """ 用户主界面 GET """
+    try:
+        user = User.objects.get(email = user_email)
+    except:
         raise Http404("用户不存在")
-    user_obj = users[0]
+
     if "logged_in_user" in request.session:
         return render(request, 'user.html', {
-            'user': user_obj,
-            'posts': Post.objects.filter(author=user_obj),
-            'comments': Comment.objects.filter(author=user_obj),
+            'user': user,
+            'posts': Post.objects.filter(author=user),
+            'comments': Comment.objects.filter(author=user),
             'logged_in_user': request.session["logged_in_user"]
         })
     else:
         return render(request, 'user.html', {
-            'user': user_obj,
-            'posts': Post.objects.filter(author=user_obj),
-            'comments': Comment.objects.filter(author=user_obj),
+            'user': user,
+            'posts': Post.objects.filter(author=user),
+            'comments': Comment.objects.filter(author=user),
         })
 
 def logout(request):
