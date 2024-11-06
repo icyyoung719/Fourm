@@ -77,7 +77,7 @@
                                     <a href="/post/{{ post.id }}/"><b>{{ post.title }}</b></a>
                                     <div class="header-spacer"></div>
                                     <span>#{{ post.id }}</span>
-                                    <span><a href="/user/{{ post.author }}">{{ post.author }}</a> <span title="{{ post.create_at }}">发布于{{ post.created_at|naturaltime }}</span></span>
+                                    <span><a href="/user/{{ post.author.email }}">{{ post.author }}</a> <span title="{{ post.create_at }}">发布于{{ post.created_at|naturaltime }}</span></span>
                                 </li>
                             {% endfor %}
                         </ul>

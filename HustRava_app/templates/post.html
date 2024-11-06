@@ -55,7 +55,7 @@
                     <h3>{{ comments|length }}条回复</h3>
                     {% for comment in comments %}
                         <li>
-                            <a href="/user/{{ comment.author.name }}">{{ comment.author.name }}</a>
+                            <a href="/user/{{ comment.author.email }}">{{ comment.author.name }}</a>
                             {% if comment.author == post.author %}
                                 <span class="text-blue">帖子作者</span>
                             {% endif %}
