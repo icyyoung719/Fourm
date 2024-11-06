@@ -134,8 +134,8 @@ def comment(request, post_id):
             form_post = Post.objects.filter(id=post_id).first()
 
             if form_content != "":
-                reply = Comment(content=form_content, author=form_author, post=form_post)
-                reply.save()
+                comment = Comment(content=form_content, author=form_author, post=form_post)
+                comment.save()
             return redirect('/post/{}/'.format(post_id))
         else:
             return redirect('/login/')
