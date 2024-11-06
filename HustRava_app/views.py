@@ -201,7 +201,7 @@ def settings_password(request):
             return render(request, 'settings_password.html', {
                 "logged_in_user": request.session["logged_in_user"],
                 "logged_in_user_email": request.session["logged_in_user_email"],
-                "user_obj": User.objects.filter(user_name=request.session["logged_in_user"]).first()
+                "user_obj": User.objects.filter(email=request.session["logged_in_user_email"]).first()
             })
         else:
             return redirect('/login/')
@@ -211,12 +211,13 @@ def settings_password(request):
         form_new_password_confirm = request.POST.get('new_password_confirm')
 
         if "logged_in_user" in request.session:
-            user = User.objects.filter(user_name=request.session["logged_in_user"]).first()
+            user = User.objects.filter(email=request.session["logged_in_user_email"]).first()
 
             if form_original_password != user.password:
                 return render(request, 'settings_password.html', {
                     "error": "原密码错误",
                     "logged_in_user": request.session["logged_in_user"],
+                    "logged_in_user_email": request.session["logged_in_user_email"],
                     "user_obj": user
                 })
             if form_new_password != form_new_password_confirm:
@@ -229,6 +230,7 @@ def settings_password(request):
             user.password = form_new_password
             user.save()
             del request.session['logged_in_user']
+            del request.session['logged_in_user_email']
 
         return redirect('/login/')
 
