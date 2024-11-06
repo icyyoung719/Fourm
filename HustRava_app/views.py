@@ -27,7 +27,8 @@ def index(request):
                 "posts": Post.objects.count(),
                 "comments": Comment.objects.count()
             },
-            "logged_in_user": request.session["logged_in_user"]
+            "logged_in_user": request.session["logged_in_user"],
+            "logged_in_user_email":request.session["logged_in_user_email"]
         })
     else:
         return render(request, 'index.html', {
@@ -74,6 +75,7 @@ def login(request):
         user = User.objects.filter(email=form_email, password=form_password).first()
         if user:
             request.session['logged_in_user'] = user.name
+            request.session['logged_in_user_email'] = user.email
             return redirect('/')
         else:
             return render(request, 'login.html', {'error': '用户名或密码错误'})
