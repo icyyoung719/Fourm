@@ -7,5 +7,5 @@ from HustRava_app.models import User, Post, Comment, Tag, Notification
 admin.site.register(User)
 admin.site.register(Post)
 admin.site.register(Comment)
-admin.site.register(Tag)
-admin.site.register(Notification)
+# admin.site.register(Tag)
+# admin.site.register(Notification)

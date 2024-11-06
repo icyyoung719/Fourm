@@ -15,9 +15,30 @@ from django.utils import timezone
 
 # Home view
 def index(request):
-    posts = Post.objects.all().order_by('-created_at')
-    return render(request, 'index.html', {'posts': posts})
-
+    """ 首页 GET """
+    # 将所有帖子按时间排序
+    posts = Post.objects.order_by('-topic_create_date')
+    if "logged_in_user" in request.session:
+        return render(request, 'index.html', {
+            "topics": posts,
+            "topped_topics": Post.objects.filter(is_topped=True).order_by('-topic_create_date'),
+            "stats": {
+                "users": User.objects.count(),
+                "topics": Post.objects.count(),
+                "replies": Comment.objects.count()
+            },
+            "logged_in_user": request.session["logged_in_user"]
+        })
+    else:
+        return render(request, 'index.html', {
+            "topics": posts,
+            "stats": {
+                "users": User.objects.count(),
+                "topics": Post.objects.count(),
+                "replies": Comment.objects.count()
+            },
+            "topped_topics": Post.objects.filter(is_topped=True).order_by('-topic_create_date')
+        })
 
 def register(request):
     """ 注册 GET/POST """
@@ -30,10 +51,10 @@ def register(request):
         form_password = request.POST.get('password')
 
         if form_email == "" or form_password == "":
-            return render(request, 'forum_app/register.html', {'error': '请填写完整信息'})
+            return render(request, 'register.html', {'error': '请填写完整信息'})
 
         if len(User.objects.filter(email = form_email)) != 0:
-            return render(request, 'forum_app/register.html', {'error': '用户已存在'})
+            return render(request, 'register.html', {'error': '用户已存在'})
 
         user = User(email = form_email, password = form_password)
         user.save()
@@ -52,103 +73,178 @@ def login(request):
 
         user = User.objects.filter(email=form_email, password=form_password).first()
         if user:
-            request.session['logged_in_user'] = user.user_name
-            return redirect('/')
+            # 弹窗提示登录
+            print("登陆成功")
+            messages.success(request, "登录成功")
+            request.session['logged_in_user'] = user.name
+            return redirect('register')
         else:
             return render(request, 'login.html', {'error': '用户名或密码错误'})
 
+def create(request):
+    """ 创建帖子 GET/POST """
+    if request.method == "GET":
+        if "logged_in_user" in request.session:
+            return render(request, 'create.html', {
+                "logged_in_user": request.session["logged_in_user"]
+            })
+        else:
+            return redirect('/login/')
+    elif request.method == "POST":
+        if "logged_in_user" in request.session:
+            form_title = request.POST.get('title')
+            form_content = request.POST.get('content')
+            form_author = User.objects.filter(name=request.session["logged_in_user"]).first()
 
-# Post Detail view
-def post_detail(request, post_id):
-    post = get_object_or_404(Post, pk = post_id)
-    comments = post.comments.all()
+            if form_title == "" or form_content == "":
+                return render(request, 'create.html', {
+                    "error": "请填写完整信息",
+                    "logged_in_user": request.session["logged_in_user"]
+                })
 
-    if request.method == "POST":
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit = False)
-            comment.author = request.user
-            comment.post = post
-            comment.save()
-            messages.success(request, "Comment added successfully!")
-            return redirect('post_detail', post_id = post.id)
-    else:
-        form = CommentForm()
-
-    return render(request, 'post_detail.html', {'post': post, 'comments': comments, 'form': form})
-
-def post_list(request):
-    posts = Post.objects.all()
-    return render(request, 'post_list.html', {'posts': posts})
-
-# Create a new post
-@login_required
-def create_post(request):
-    if request.method == 'POST':
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit = False)
-            post.author = request.user
-            post.created_at = timezone.now()
+            post = Post(itle=form_title, content=form_content, author=form_author)
             post.save()
-            messages.success(request, "Post created successfully!")
-            return redirect('home')
+        else:
+            return redirect('/login/')
+        return redirect('/')
+
+
+def post(request, post_id):
+    """ 帖子 GET """
+    try:
+        post = Post.objects.get(id = post_id)
+    except:
+        raise Http404("帖子pos不存在")
+
+    if "logged_in_user" in request.session:
+        return render(request, 'topic.html', {
+            "topic": post,
+            "replies": Comment.objects.filter(post = post_id),
+            "logged_in_user": request.session["logged_in_user"]
+        })
     else:
-        form = PostForm()
+        return render(request, 'topic.html', {
+            "topic": post,
+            "replies": Comment.objects.filter(post = post_id)
+        })
 
-    return render(request, 'create_post.html', {'form': form})
+def comment(request, post_id):
+    """ 回复 POST """
+    if request.method == "POST":
+        if "logged_in_user" in request.session:
+            form_content = request.POST.get('content')
+            form_author = User.objects.filter(name=request.session["logged_in_user"]).first()
+            form_post = Post.objects.filter(id=post_id).first()
+
+            if form_content != "":
+                reply = Comment(content=form_content, author=form_author, post=form_post)
+                reply.save()
+            return redirect('/post/{}/'.format(post_id))
+        else:
+            return redirect('/login/')
 
 
-# User profile view
-def profile(request, user_id):
-    user = get_object_or_404(User, pk = user_id)
-    posts = user.posts.all()
-    followers = user.followers.all()
-    following = user.followings.all()
-    return render(request, 'profile.html',
-                  {'user': user, 'posts': posts, 'followers': followers, 'following': following})
-
-
-# Follow/unfollow a user
-@login_required
-def follow_user(request, user_id):
-    user_to_follow = get_object_or_404(User, pk = user_id)
-    if request.user in user_to_follow.followers.all():
-        user_to_follow.followers.remove(request.user)
-        messages.info(request, f"You unfollowed {user_to_follow.name}")
+def user(request, user_email):
+    """ 用户 GET """
+    users = list(User.objects.filter(email=user_email))
+    if len(users) == 0:
+        raise Http404("用户不存在")
+    user_obj = users[0]
+    if "logged_in_user" in request.session:
+        return render(request, 'user.html', {
+            'user': user_obj,
+            'topics': Post.objects.filter(author=user_obj),
+            'replies': Comment.objects.filter(author=user_obj),
+            'logged_in_user': request.session["logged_in_user"]
+        })
     else:
-        user_to_follow.followers.add(request.user)
-        messages.success(request, f"You followed {user_to_follow.name}")
+        return render(request, 'user.html', {
+            'user': user_obj,
+            'topics': Post.objects.filter(author=user_obj),
+            'replies': Comment.objects.filter(author=user_obj),
+        })
 
-    return redirect('profile', user_id = user_to_follow.id)
+def logout(request):
+    """ 退出登录 GET """
+    try:
+        del request.session['logged_in_user']
+    except KeyError:
+        pass
+    return redirect('/')
 
-
-# Bookmark a post
-@login_required
-def bookmark_post(request, post_id):
-    post = get_object_or_404(Post, pk = post_id)
-    bookmark, created = Bookmark.objects.get_or_create(user = request.user, post = post)
-    if not created:
-        bookmark.delete()
-        messages.info(request, "Bookmark removed.")
+def users(request):
+    """ 用户列表 GET """
+    user_list = User.objects.order_by('user_create_date')
+    if "logged_in_user" in request.session:
+        return render(request, 'users.html', {
+            "user_list": user_list,
+            "logged_in_user": request.session["logged_in_user"]
+        })
     else:
-        messages.success(request, "Post bookmarked.")
+        return render(request, 'users.html', {"user_list": user_list})
 
-    return redirect('post_detail', post_id = post.id)
+def settings(request):
+    """ 用户设置 GET """
+    if "logged_in_user" in request.session:
+        return render(request, 'settings.html', {
+            "logged_in_user": request.session["logged_in_user"]
+        })
+    else:
+        return redirect('/login/')
 
+def settings_password(request):
+    """ 用户设置(密码) GET/POST """
+    if request.method == "GET":
+        if "logged_in_user" in request.session:
+            return render(request, 'settings_password.html', {
+                "logged_in_user": request.session["logged_in_user"],
+                "user_obj": User.objects.filter(user_name=request.session["logged_in_user"]).first()
+            })
+        else:
+            return redirect('/login/')
+    elif request.method == "POST":
+        form_original_password = request.POST.get('original_password')
+        form_new_password = request.POST.get('new_password')
+        form_new_password_confirm = request.POST.get('new_password_confirm')
 
-# Notifications view
-@login_required
-def notifications(request):
-    notifications = request.user.notifications.all().order_by('-created_at')
-    return render(request, 'notifications.html', {'notifications': notifications})
+        if "logged_in_user" in request.session:
+            user = User.objects.filter(user_name=request.session["logged_in_user"]).first()
 
+            if form_original_password != user.password:
+                return render(request, 'settings_password.html', {
+                    "error": "原密码错误",
+                    "logged_in_user": request.session["logged_in_user"],
+                    "user_obj": user
+                })
+            if form_new_password != form_new_password_confirm:
+                return render(request, 'settings_password.html', {
+                    "error": "两次输入的密码不一致",
+                    "logged_in_user": request.session["logged_in_user"],
+                    "user_obj": user
+                })
 
-# Mark notifications as read
-@login_required
-def mark_notifications_as_read(request):
-    request.user.notifications.filter(is_read = False).update(is_read = True)
-    messages.success(request, "Notifications marked as read.")
-    return redirect('notifications')
+            user.password = form_new_password
+            user.save()
+            del request.session['logged_in_user']
 
+        return redirect('/login/')
 
+def settings_bio(request):
+    """ 用户设置(个人简介) GET/POST """
+    if request.method == "GET":
+        if "logged_in_user" in request.session:
+            return render(request, 'settings_bio.html', {
+                "logged_in_user": request.session["logged_in_user"],
+                "user_obj": User.objects.filter(name=request.session["logged_in_user"]).first()
+            })
+        else:
+            return redirect('/login/')
+    elif request.method == "POST":
+        form_bio = request.POST.get('bio')
+
+        if "logged_in_user" in request.session:
+            user = User.objects.filter(name=request.session["logged_in_user"]).first()
+            user.user_bio = form_bio
+            user.save()
+
+        return redirect('/settings/bio/')

@@ -7,15 +7,17 @@ from django.db import models
 #TODO: 存放创建的类，如帖子类、用户类、回复类、
 # 用户类
 class User(models.Model):
-    is_staff = models.BooleanField(default=False)
-    name = models.CharField(max_length=30,default = "User_".join(random.choice(string.ascii_letters) for _ in range(10)))
+    # is_staff = models.BooleanField(default=False)#是否有管理员权限
+    name = models.CharField(max_length=30,blank=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=30)
     created_at = models.DateTimeField(auto_now_add=True)
-    # 不重要的暂时隐藏
-    # sex = models.BooleanField(default=True) #  性别字段，True为男，False为女
-    # age = models.IntegerField(default=0) # 年龄字段
-    # avatar = models.ImageField(upload_to='avatars/', default='avatars/default.jpg') # 头像字段
+    bio = models.TextField(max_length = 100, blank=True)
+    def save(self, *args, **kwargs):
+        # Set default name if name is empty
+        if not self.name:
+            self.name = f"User_{self.email}"
+        super().save(*args, **kwargs)
     def __str__(self):
         return self.name
 
@@ -23,12 +25,13 @@ class Post(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    # updated_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey('User', on_delete = models.CASCADE, related_name = "posts")
     like_nums = models.IntegerField(default = 0)
+    is_topped = models.BooleanField("置顶帖子", default=False)
+
     def __str__(self):
         return self.title
-    # comments =
 
 # 回复类
 class Comment(models.Model):
@@ -37,7 +40,7 @@ class Comment(models.Model):
     author = models.ForeignKey('User', on_delete = models.CASCADE, related_name = "comments")
     post = models.ForeignKey('Post', on_delete = models.CASCADE, related_name = "comments")
     like_nums = models.IntegerField(default = 0)
-    sub_comments = models.ManyToManyField('self', related_name = "sub_comments")
+    # sub_comments = models.ManyToManyField('self', related_name = "sub_comments")
 
 # Tag
 class Tag(models.Model):
