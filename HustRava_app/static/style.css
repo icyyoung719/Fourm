@@ -1,0 +1,196 @@
+body {
+    margin: 0;
+}
+h1, h2, h3, h4, h5, h6, p {
+    color: black;
+}
+a {
+    text-decoration: none;
+    border: none;
+    color: #2962FF;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+    border-bottom: 1px solid transparent;
+}
+a:hover {
+    color: #448AFF;
+    border-bottom: 1px solid #448AFF;
+}
+a:active {
+    color: #82B1FF;
+    border-bottom: 1px solid #82B1FF;
+}
+button, input[type="submit"] {
+    padding: 7px 10px;
+    font-size: 14px;
+    color: #E3F2FD;
+    border-radius: 3px;
+    border: none;
+    background-color: #2962FF;
+    cursor: pointer;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+}
+button:hover, input[type="submit"]:hover {
+    background-color: #448AFF;
+}
+button:active, input[type="submit"]:active {
+    background-color: #82B1FF;
+}
+button:disabled, input[type="submit"]:disabled {
+    background-color: #DDD;
+    color: #888;
+    cursor: default;
+}
+input[type="text"], input[type="password"], textarea {
+    font-family: "Microsoft Yahei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 5px;
+    width: 100%;
+    border: 1px solid #82B1FF;
+    border-radius: 3px;
+    outline: none;
+    transition: border-color 0.3s ease,
+                box-shadow 0.3s ease;
+}
+input[type="text"]:hover, input[type="password"]:hover, textarea:hover {
+    border-color: #448AFF;
+}
+input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+    border-color: #2962FF !important;
+    box-shadow: -1px -1px #2962FF, 1px 1px #2962FF,
+                -1px 1px #2962FF, 1px -1px #2962FF;
+}
+textarea {
+    height: 200px;
+    resize: none;
+}
+form {
+    border: 1px solid #BBDEFB;
+    padding: 18px;
+    border-radius: 5px;
+}
+label {
+    color: #666;
+    font-size: 16px;
+}
+
+.a-button {
+    border: none !important;
+}
+.header {
+    width: 100%;
+    height: 50px;
+    background-color: #BBDEFBAA;
+    backdrop-filter: blur(16px);
+    box-shadow: 0px 2px 8px #8888;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.header * {
+    margin: 0 3px;
+}
+.header-spacer {
+    -webkit-box-flex: 1;
+    flex-grow: 1;
+    margin: 0;
+}
+.margin {
+    width: 18%;
+    display: inline-block;
+}
+.button-white {
+    background-color: #FFF;
+    border: 1px solid #2962FF;
+    color: #2962FF;
+}
+.button-white:hover {
+    background-color: #BBDEFB;
+}
+.button-white:active {
+    background-color: #82B1FF;
+}
+.header-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+.button-dropdown {
+    background: transparent;
+    color: #2962FF;
+    margin: 0;
+}
+.button-dropdown:hover {
+    background-color: #82B1FF;
+}
+.dropdown-content {
+    display: block;
+    opacity: 0;
+    position: absolute;
+    background-color: white;
+    min-width: 140px;
+    z-index: 114514;
+    right: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+.dropdown:hover .dropdown-content {
+    opacity: 1;
+    pointer-events: all;
+}
+.dropdown-content > ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.dropdown-content > ul > li {
+    cursor: pointer;
+}
+.dropdown-content div {
+    background-color: white;
+    transition: all 0.3s ease;
+}
+.dropdown-content div:hover {
+    background-color: #2962FF;
+    color: white;
+}
+.dropdown-content div:active {
+    background-color: #82B1FF;
+}
+.dropdown-content a > div {
+    padding: 5px 10px;
+    color: black;
+    font-size: 14px;
+}
+.dropdown-content * {
+    margin: 0;
+}
+.alert-error {
+    background-color: #F004;
+    color: red;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid red;
+    border-radius: 5px;
+}
+.alert-warn {
+    background-color: #FF04;
+    color: #D80;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #FB0;
+    border-radius: 5px;
+}
+::selection {
+    background-color: #008AFB40;
+}

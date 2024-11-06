@@ -1,0 +1,82 @@
+body, .header, #footer, h1, h2, h3, h4, h5, h6, p, span {
+    transition: background-color 0.2s ease,
+                color 0.2s ease;
+}
+body.dark-mode {
+    background-color: #111116;
+}
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3, 
+body.dark-mode h4, 
+body.dark-mode h5, 
+body.dark-mode h6, 
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode input[type="submit"],
+body.dark-mode button,
+body.dark-mode li {
+    color: #DDD;
+}
+body.dark-mode #footer {
+    background-color: #333338;
+}
+body.dark-mode .banner {
+    background-color: #202025;
+}
+body.dark-mode .header {
+    background-color: #333338AA;
+    box-shadow: 0px 2px 8px #22222788;
+}
+body.dark-mode .dropdown-content {
+    background-color: #202025;
+}
+body.dark-mode .dropdown-content div {
+    background-color: #222227;
+    color: #DDD;
+}
+body.dark-mode .dropdown-content div:hover {
+    background-color: #404045;
+}
+body.dark-mode .dropdown-content div:active {
+    background-color: #505055;
+}
+body.dark-mode input[type="text"], 
+body.dark-mode textarea,
+body.dark-mode input[type="password"] {
+    background-color: transparent;
+    color: white;
+    border-color: #808085;
+}
+body.dark-mode input[type="text"]:hover, 
+body.dark-mode textarea:hover,
+body.dark-mode input[type="password"]:hover {
+    border-color: #448AFF;
+}
+body.dark-mode label {
+    color: #AAA;
+}
+body.dark-mode form {
+    border-color: #505055;
+}
+body.dark-mode .reply-list > li {
+    border: 1px solid #404045;
+}
+body.dark-mode .button-dropdown:hover {
+    background-color: #404045;
+    color: #DDD;
+}
+body.dark-mode .button-white {
+    background-color: transparent;
+    color: #DDD;
+}
+body.dark-mode .button-white:hover {
+    background-color: #404045;
+}
+body.dark-mode .button-white:active {
+    background-color: #808085;
+}
+button:disabled, input[type="submit"]:disabled {
+    background-color: #404045;
+    color: #888 !important;
+}
