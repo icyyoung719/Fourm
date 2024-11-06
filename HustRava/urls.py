@@ -34,7 +34,7 @@ urlpatterns = [
     path('create/', views.create, name="create"),                               # 创建帖子 GET/POST
     path('post/<int:topic_id>/', views.post, name="post"),                   # 帖子 GET
     path('post/<int:topic_id>/reply/', views.comment, name="comment"),             # 回复 POST
-    path('user/<str:user_name>/', views.user, name="user"),                     # 用户 GET
+    path('user/<str:name>/', views.user, name="user"),                     # 用户 GET
     path('logout/', views.logout, name="logout"),                               # 退出登录 GET
     path('users/', views.users, name="users"),                                  # 用户列表 GET
 

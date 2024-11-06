@@ -20,3 +20,10 @@
 - ./HustRava_app/views.py: 添加新的视图函数
 - ./HustRava_app/templates/HustRava_app/xxx.html: 添加新的html页面
 - ./HustRava_app/static/: 添加新的css样式表、js文件等在html文件中需要用到的元素
+
+
+## 将来需要实现的功能
+- 用户注册时，利用邮箱进行验证
+- 登录和注册的框，用浅色默认提示应该输入的数据内容
+- 用户主页，用以更改自己的信息
+- 页面，尤其是主页面，添加更多的css修饰

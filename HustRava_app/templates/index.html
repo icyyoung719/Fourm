@@ -50,16 +50,16 @@
                         <h3 style="margin: 0;">统计</h3>
                         <ul style="padding-left: 20px; margin-bottom: 0;">
                             <li>用户总数：{{ stats.users }}</li>
-                            <li>帖子总数：{{ stats.topics }}</li>
-                            <li>回复总数：{{ stats.replies }}</li>
+                            <li>帖子总数：{{ stats.posts }}</li>
+                            <li>回复总数：{{ stats.comments }}</li>
                         </ul>
                     </div>
                 </div>
                 <div>
-                    {% if topped_topics %}
+                    {% if topped_posts %}
                         <h3>置顶帖子</h3>
                         <ul class="topic-list">
-                            {% for post in topped_topics %}
+                            {% for post in topped_posts %}
                                 <li class="flex">
                                     <a href="/topic/{{ topic.id }}"><b>{{ post.title }}</b></a>
                                     <div class="header-spacer"></div>
@@ -69,10 +69,10 @@
                             {% endfor %}
                         </ul>
                     {% endif %}
-                    {% if topics %}
+                    {% if posts %}
                         <h3>所有帖子</h3>
-                        <ul class="topic-list">
-                            {% for post in topics %}
+                        <ul class="post-list">
+                            {% for post in posts %}
                                 <li class="flex">
                                     <a href="/topic/{{ topic.id }}/"><b>{{ post.title }}</b></a>
                                     <div class="header-spacer"></div>

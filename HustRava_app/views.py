@@ -20,22 +20,22 @@ def index(request):
     posts = Post.objects.order_by('-created_at')
     if "logged_in_user" in request.session:
         return render(request, 'index.html', {
-            "topics": posts,
-            "topped_topics": Post.objects.filter(is_topped=True).order_by('-created_at'),
+            "posts": posts,
+            "topped_posts": Post.objects.filter(is_topped=True).order_by('-created_at'),
             "stats": {
                 "users": User.objects.count(),
-                "topics": Post.objects.count(),
-                "replies": Comment.objects.count()
+                "posts": Post.objects.count(),
+                "comments": Comment.objects.count()
             },
             "logged_in_user": request.session["logged_in_user"]
         })
     else:
         return render(request, 'index.html', {
-            "topics": posts,
+            "posts": posts,
             "stats": {
                 "users": User.objects.count(),
-                "topics": Post.objects.count(),
-                "replies": Comment.objects.count()
+                "posts": Post.objects.count(),
+                "comments": Comment.objects.count()
             },
             "topped_topics": Post.objects.filter(is_topped=True).order_by('-created_at')
         })
@@ -99,7 +99,7 @@ def create(request):
                     "logged_in_user": request.session["logged_in_user"]
                 })
 
-            post = Post(itle=form_title, content=form_content, author=form_author)
+            post = Post(title=form_title, content=form_content, author=form_author)
             post.save()
         else:
             return redirect('/login/')
@@ -150,15 +150,15 @@ def user(request, user_email):
     if "logged_in_user" in request.session:
         return render(request, 'user.html', {
             'user': user_obj,
-            'topics': Post.objects.filter(author=user_obj),
-            'replies': Comment.objects.filter(author=user_obj),
+            'posts': Post.objects.filter(author=user_obj),
+            'comments': Comment.objects.filter(author=user_obj),
             'logged_in_user': request.session["logged_in_user"]
         })
     else:
         return render(request, 'user.html', {
             'user': user_obj,
-            'topics': Post.objects.filter(author=user_obj),
-            'replies': Comment.objects.filter(author=user_obj),
+            'posts': Post.objects.filter(author=user_obj),
+            'comments': Comment.objects.filter(author=user_obj),
         })
 
 def logout(request):
