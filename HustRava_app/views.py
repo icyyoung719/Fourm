@@ -2,12 +2,7 @@ from hashlib import sha1
 
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
-from django.contrib.auth.decorators import login_required
 from .models import User, Post, Comment, Tag, Notification, Bookmark, Follow
-from .forms import PostForm, CommentForm  # Make sure to create forms for posts and comments
-from django.contrib import messages
-from django.utils import timezone
 
 # Create your views here.
 # docs: https://geek-docs.com/django/django-top-articles/1007100_django_creating_views.html
@@ -67,6 +62,7 @@ def login(request):
         # 如果已经登录, 就退出登录 (手动滑稽)
         if "logged_in_user" in request.session:
             del request.session['logged_in_user']
+            del request.session['logged_in_user_email']
         return render(request, 'login.html')
     elif request.method == "POST":
         form_email = request.POST.get('user_email')
@@ -85,7 +81,8 @@ def create(request):
     if request.method == "GET":
         if "logged_in_user" in request.session:
             return render(request, 'create.html', {
-                "logged_in_user": request.session["logged_in_user"]
+                "logged_in_user": request.session["logged_in_user"],
+                "logged_in_user_email": request.session["logged_in_user_email"]
             })
         else:
             return redirect('/login/')
@@ -119,7 +116,8 @@ def post(request, post_id):
         return render(request, 'post.html', {
             "post": post,
             "comments": Comment.objects.filter(post = post_id),
-            "logged_in_user": request.session["logged_in_user"]
+            "logged_in_user": request.session["logged_in_user"],
+            "logged_in_user_email": request.session["logged_in_user_email"]
         })
     else:
         return render(request, 'post.html', {
@@ -132,7 +130,7 @@ def comment(request, post_id):
     if request.method == "POST":
         if "logged_in_user" in request.session:
             form_content = request.POST.get('content')
-            form_author = User.objects.filter(name=request.session["logged_in_user"]).first()
+            form_author = User.objects.filter(email=request.session["logged_in_user_email"]).first()
             form_post = Post.objects.filter(id=post_id).first()
 
             if form_content != "":
@@ -155,7 +153,8 @@ def user(request, user_email):
             'user': user,
             'posts': Post.objects.filter(author=user),
             'comments': Comment.objects.filter(author=user),
-            'logged_in_user': request.session["logged_in_user"]
+            'logged_in_user': request.session["logged_in_user"],
+            'logged_in_user_email': request.session["logged_in_user_email"]
         })
     else:
         return render(request, 'user.html', {
@@ -168,6 +167,7 @@ def logout(request):
     """ 退出登录 GET """
     try:
         del request.session['logged_in_user']
+        del request.session['logged_in_user_email']
     except KeyError:
         pass
     return redirect('/')
@@ -178,7 +178,8 @@ def users(request):
     if "logged_in_user" in request.session:
         return render(request, 'users.html', {
             "user_list": user_list,
-            "logged_in_user": request.session["logged_in_user"]
+            "logged_in_user": request.session["logged_in_user"],
+            "logged_in_user_email": request.session["logged_in_user_email"]
         })
     else:
         return render(request, 'users.html', {"user_list": user_list})
@@ -187,7 +188,8 @@ def settings(request):
     """ 用户设置 GET """
     if "logged_in_user" in request.session:
         return render(request, 'settings.html', {
-            "logged_in_user": request.session["logged_in_user"]
+            "logged_in_user": request.session["logged_in_user"],
+            "logged_in_user_email": request.session["logged_in_user_email"]
         })
     else:
         return redirect('/login/')
@@ -198,6 +200,7 @@ def settings_password(request):
         if "logged_in_user" in request.session:
             return render(request, 'settings_password.html', {
                 "logged_in_user": request.session["logged_in_user"],
+                "logged_in_user_email": request.session["logged_in_user_email"],
                 "user_obj": User.objects.filter(user_name=request.session["logged_in_user"]).first()
             })
         else:
@@ -235,7 +238,8 @@ def settings_bio(request):
         if "logged_in_user" in request.session:
             return render(request, 'settings_bio.html', {
                 "logged_in_user": request.session["logged_in_user"],
-                "user_obj": User.objects.filter(name=request.session["logged_in_user"]).first()
+                "logged_in_user_email": request.session["logged_in_user_email"],
+                "user_obj": User.objects.filter(email=request.session["logged_in_user_email"]).first()
             })
         else:
             return redirect('/login/')
@@ -243,8 +247,8 @@ def settings_bio(request):
         form_bio = request.POST.get('bio')
 
         if "logged_in_user" in request.session:
-            user = User.objects.filter(name=request.session["logged_in_user"]).first()
-            user.user_bio = form_bio
+            user = User.objects.filter(email=request.session["logged_in_user_email"]).first()
+            user.bio = form_bio
             user.save()
 
         return redirect('/settings/bio/')
