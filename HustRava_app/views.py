@@ -68,16 +68,13 @@ def login(request):
             del request.session['logged_in_user']
         return render(request, 'login.html')
     elif request.method == "POST":
-        form_email = request.POST.get('email')
+        form_email = request.POST.get('user_email')
         form_password = request.POST.get('password')
 
         user = User.objects.filter(email=form_email, password=form_password).first()
         if user:
-            # 弹窗提示登录
-            print("登陆成功")
-            messages.success(request, "登录成功")
             request.session['logged_in_user'] = user.name
-            return redirect('register')
+            return redirect('/')
         else:
             return render(request, 'login.html', {'error': '用户名或密码错误'})
 
