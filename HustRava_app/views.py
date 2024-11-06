@@ -115,14 +115,14 @@ def post(request, post_id):
 
     if "logged_in_user" in request.session:
         return render(request, 'post.html', {
-            "topic": post,
-            "replies": Comment.objects.filter(post = post_id),
+            "post": post,
+            "comments": Comment.objects.filter(post = post_id),
             "logged_in_user": request.session["logged_in_user"]
         })
     else:
         return render(request, 'post.html', {
-            "topic": post,
-            "replies": Comment.objects.filter(post = post_id)
+            "post": post,
+            "comments": Comment.objects.filter(post = post_id)
         })
 
 def comment(request, post_id):
