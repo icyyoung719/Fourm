@@ -17,11 +17,11 @@ from django.utils import timezone
 def index(request):
     """ 首页 GET """
     # 将所有帖子按时间排序
-    posts = Post.objects.order_by('-topic_create_date')
+    posts = Post.objects.order_by('-created_at')
     if "logged_in_user" in request.session:
         return render(request, 'index.html', {
             "topics": posts,
-            "topped_topics": Post.objects.filter(is_topped=True).order_by('-topic_create_date'),
+            "topped_topics": Post.objects.filter(is_topped=True).order_by('-created_at'),
             "stats": {
                 "users": User.objects.count(),
                 "topics": Post.objects.count(),
@@ -37,7 +37,7 @@ def index(request):
                 "topics": Post.objects.count(),
                 "replies": Comment.objects.count()
             },
-            "topped_topics": Post.objects.filter(is_topped=True).order_by('-topic_create_date')
+            "topped_topics": Post.objects.filter(is_topped=True).order_by('-created_at')
         })
 
 def register(request):

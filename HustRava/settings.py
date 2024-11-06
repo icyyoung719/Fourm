@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions', #The session framework.
     'django.contrib.messages', #The messaging framework.
     'django.contrib.staticfiles', #The static files framework.
+    'django.contrib.humanize', #
     'HustRava_app'
 ]
 

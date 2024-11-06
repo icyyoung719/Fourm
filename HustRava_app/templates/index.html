@@ -1,21 +1,95 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Forum{% endblock %}</title>
-</head>
-<body>
-    <header>
-        <nav>
-            <a href="{% url 'index' %}">Home</a>
-            <a href="{% url 'register' %}">Register</a>
-            <a href="{% url 'login' %}">Login</a>
-        </nav>
-    </header>
+{% load static %}
+{% load humanize %}
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-</body>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>论坛</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'style-forum.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'style-dark.css' %}" />
+    </head>
+    <body>
+        <header class="header">
+            <div class="margin"></div>
+            <a href="/" class="a-button header-title">论坛</a>
+
+            <div class="header-spacer"></div>
+
+            {% if logged_in_user %}
+                <div class="dropdown">
+                    <button class="button-dropdown">{{ logged_in_user }}</button>
+                    <div class="dropdown-content">
+                        <ul>
+                            <li><a href="/user/{{ logged_in_user }}"><div>个人主页</div></a></li>
+                            <li><a href="/settings/"><div>设置</div></a></li>
+                            <li><a onclick="toggle_theme()"><div>切换主题</div></a></li>
+                            <div class="hr" style="margin: 4% 3px;"></div>
+                            <li><a href="/logout/"><div class="logout-button">退出登录</div></a></li>
+                        </ul>
+                    </div>
+                </div>
+            {% else %}
+                <a onclick="toggle_theme()" style="cursor: pointer;">切换主题</a>
+                <a href="/login/" class="a-button"><button class="button-white">登录</button></a>
+                <a href="/register/" class="a-button"><button>注册</button></a>
+            {% endif %}
+            <div class="margin"></div>
+        </header>
+        <div id="main">
+            <div class="banner">
+                <h2>欢迎</h2>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente eveniet fuga dolore velit et quam dolores eos, distinctio perferendis. In consequuntur ipsam eaque delectus repellat. Dolore quod magni minima numquam.</p>
+            </div>
+            <div class="content flex">
+                <div style="margin-top: 18px; padding-right: 8px; border-right: 1px solid #BBB; min-width: 150px;">
+                    <a href="/create/" class="a-button"><button style="width: calc(100%); margin-bottom: 5px;">创建帖子</button></a>
+                    <a href="/users/">用户列表</a>
+                    <div class="stats">
+                        <h3 style="margin: 0;">统计</h3>
+                        <ul style="padding-left: 20px; margin-bottom: 0;">
+                            <li>用户总数：{{ stats.users }}</li>
+                            <li>帖子总数：{{ stats.topics }}</li>
+                            <li>回复总数：{{ stats.replies }}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    {% if topped_topics %}
+                        <h3>置顶帖子</h3>
+                        <ul class="topic-list">
+                            {% for post in topped_topics %}
+                                <li class="flex">
+                                    <a href="/topic/{{ topic.id }}"><b>{{ post.title }}</b></a>
+                                    <div class="header-spacer"></div>
+                                    <span>#{{ post.id }}</span>
+                                    <span><a href="/user/{{ post.author }}">{{ post.author }}</a> <span title="{{ post.create_at }}">发布于{{ post.created_at|naturaltime }}</span></span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if topics %}
+                        <h3>所有帖子</h3>
+                        <ul class="topic-list">
+                            {% for post in topics %}
+                                <li class="flex">
+                                    <a href="/topic/{{ topic.id }}/"><b>{{ post.title }}</b></a>
+                                    <div class="header-spacer"></div>
+                                    <span>#{{ post.id }}</span>
+                                    <span><a href="/user/{{ post.author }}">{{ post.author }}</a> <span title="{{ post.create_at }}">发布于{{ post.create_at|naturaltime }}</span></span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>空空如也</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div id="footer">
+            <p>底部内容</p>
+        </div>
+        <script src="{% static 'forum.js' %}"></script>
+    </body>
 </html>
