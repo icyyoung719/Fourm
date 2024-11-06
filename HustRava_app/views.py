@@ -88,17 +88,17 @@ def create(request):
             return redirect('/login/')
     elif request.method == "POST":
         if "logged_in_user" in request.session:
-            form_title = request.POST.get('title')
-            form_content = request.POST.get('content')
-            form_author = User.objects.filter(name=request.session["logged_in_user"]).first()
+            post_title = request.POST.get('title')
+            post_content = request.POST.get('content')
+            post_author = get_object_or_404(User, email = request.session["logged_in_user_email"])
 
-            if form_title == "" or form_content == "":
+            if post_title == "" or post_content == "":
                 return render(request, 'create.html', {
                     "error": "请填写完整信息",
                     "logged_in_user": request.session["logged_in_user"]
                 })
 
-            post = Post(title=form_title, content=form_content, author=form_author)
+            post = Post(title=post_title, content=post_content, author=post_author)
             post.save()
         else:
             return redirect('/login/')
@@ -129,12 +129,12 @@ def comment(request, post_id):
     """ 回复 POST """
     if request.method == "POST":
         if "logged_in_user" in request.session:
-            form_content = request.POST.get('content')
-            form_author = User.objects.filter(email=request.session["logged_in_user_email"]).first()
-            form_post = Post.objects.filter(id=post_id).first()
+            comment_content = request.POST.get('content')
+            comment_author = get_object_or_404(User, email = request.session["logged_in_user_email"])
+            comment_post = Post.objects.filter(id=post_id).first()
 
-            if form_content != "":
-                comment = Comment(content=form_content, author=form_author, post=form_post)
+            if comment_content != "":
+                comment = Comment(content=comment_content, author=comment_author, post=comment_post)
                 comment.save()
             return redirect('/post/{}/'.format(post_id))
         else:
@@ -201,7 +201,7 @@ def settings_password(request):
             return render(request, 'settings_password.html', {
                 "logged_in_user": request.session["logged_in_user"],
                 "logged_in_user_email": request.session["logged_in_user_email"],
-                "user_obj": User.objects.filter(email=request.session["logged_in_user_email"]).first()
+                "user_obj": get_object_or_404(User, email = request.session["logged_in_user_email"])
             })
         else:
             return redirect('/login/')
@@ -211,7 +211,7 @@ def settings_password(request):
         form_new_password_confirm = request.POST.get('new_password_confirm')
 
         if "logged_in_user" in request.session:
-            user = User.objects.filter(email=request.session["logged_in_user_email"]).first()
+            user = get_object_or_404(User, email = request.session["logged_in_user_email"])
 
             if form_original_password != user.password:
                 return render(request, 'settings_password.html', {
@@ -241,7 +241,7 @@ def settings_bio(request):
             return render(request, 'settings_bio.html', {
                 "logged_in_user": request.session["logged_in_user"],
                 "logged_in_user_email": request.session["logged_in_user_email"],
-                "user_obj": User.objects.filter(email=request.session["logged_in_user_email"]).first()
+                "user_obj": get_object_or_404(User, email = request.session["logged_in_user_email"])
             })
         else:
             return redirect('/login/')
@@ -249,7 +249,7 @@ def settings_bio(request):
         form_bio = request.POST.get('bio')
 
         if "logged_in_user" in request.session:
-            user = User.objects.filter(email=request.session["logged_in_user_email"]).first()
+            user = get_object_or_404(User, email = request.session["logged_in_user_email"])
             user.bio = form_bio
             user.save()
 
