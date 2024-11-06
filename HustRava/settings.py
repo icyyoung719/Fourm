@@ -116,7 +116,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'  #别名，用于在其他py文件（尤其是views.py）中引用静态文件
+STATIC_URL = '/static/'  #别名，用于在其他py文件（尤其是views.py）中引用静态文件
 STATICFILES_DIRS = [os.path.join(BASE_DIR,'HustRava_app','static')] #静态文件位置
 
 # Default primary key field type

@@ -26,14 +26,25 @@ from HustRava_app import views
 admin.autodiscover()
 
 urlpatterns = [
-    path('admin/', admin.site.urls), # Admin page
+    path('admin/', admin.site.urls),                                            # 管理界面
 
-    path('', views.index, name = 'index'),  # Homepage view
-    path('register/', views.register, name = "register"),
+    path('', views.index, name="index"),                                        # 首页 GET
     path('login/', views.login, name="login"),                                  # 登录 GET/POST
-    #path('posts/', views.post_list, name = 'post_list'),  # List of posts
-    #path('post/<int:id>/', views.post_detail, name = 'post_detail'),  # Post detail
-    #path('post/new/', views.create_post, name = 'create_post'),  # Form to create a post
+    path('register/', views.register, name="register"),                         # 注册 GET/POST
+    path('create/', views.create, name="create"),                               # 创建帖子 GET/POST
+    path('post/<int:topic_id>/', views.post, name="post"),                   # 帖子 GET
+    path('post/<int:topic_id>/reply/', views.comment, name="comment"),             # 回复 POST
+    path('user/<str:user_name>/', views.user, name="user"),                     # 用户 GET
+    path('logout/', views.logout, name="logout"),                               # 退出登录 GET
+    path('users/', views.users, name="users"),                                  # 用户列表 GET
+
+    path('settings/', views.settings, name="settings"),                         # 用户设置 GET
+    path(
+        'settings/password/',
+        views.settings_password,
+        name="settings_password"
+    ),                                                                          # 用户设置(密码) GET/POST
+    path('settings/bio/', views.settings_bio, name="settings_bio"),             # 用户设置(个人简介) GET/POST
 
 ]
 

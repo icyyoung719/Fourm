@@ -117,13 +117,13 @@ def post(request, post_id):
         raise Http404("帖子pos不存在")
 
     if "logged_in_user" in request.session:
-        return render(request, 'topic.html', {
+        return render(request, 'post.html', {
             "topic": post,
             "replies": Comment.objects.filter(post = post_id),
             "logged_in_user": request.session["logged_in_user"]
         })
     else:
-        return render(request, 'topic.html', {
+        return render(request, 'post.html', {
             "topic": post,
             "replies": Comment.objects.filter(post = post_id)
         })
