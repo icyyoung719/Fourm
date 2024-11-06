@@ -47,7 +47,7 @@ def register(request):
             del request.session['logged_in_user']
         return render(request, 'register.html')
     elif request.method == "POST":
-        form_email = request.POST.get('email')
+        form_email = request.POST.get('user_email')
         form_password = request.POST.get('password')
 
         if form_email == "" or form_password == "":
@@ -174,7 +174,7 @@ def logout(request):
 
 def users(request):
     """ 用户列表 GET """
-    user_list = User.objects.order_by('user_create_date')
+    user_list = User.objects.order_by('created_at')
     if "logged_in_user" in request.session:
         return render(request, 'users.html', {
             "user_list": user_list,
