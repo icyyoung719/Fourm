@@ -3,6 +3,7 @@ from hashlib import sha1
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import User, Post, Comment, Tag, Notification, Bookmark, Follow
+from .util import encrypt,verify
 
 # Create your views here.
 # docs: https://geek-docs.com/django/django-top-articles/1007100_django_creating_views.html
@@ -52,7 +53,8 @@ def register(request):
         if len(User.objects.filter(email = form_email)) != 0:
             return render(request, 'register.html', {'error': '用户已存在'})
 
-        user = User(email = form_email, password = form_password)
+        encrypted_password = encrypt(form_password)
+        user = User(email = form_email, password = encrypted_password)
         user.save()
         return redirect('/login/')
 
@@ -67,8 +69,9 @@ def login(request):
     elif request.method == "POST":
         form_email = request.POST.get('user_email')
         form_password = request.POST.get('password')
+        encrypted_password = encrypt(form_password)
 
-        user = User.objects.filter(email=form_email, password=form_password).first()
+        user = User.objects.filter(email=form_email, password=encrypted_password).first()
         if user:
             request.session['logged_in_user'] = user.name
             request.session['logged_in_user_email'] = user.email
@@ -213,7 +216,7 @@ def settings_password(request):
         if "logged_in_user" in request.session:
             user = get_object_or_404(User, email = request.session["logged_in_user_email"])
 
-            if form_original_password != user.password:
+            if not verify(form_original_password, user.password):
                 return render(request, 'settings_password.html', {
                     "error": "原密码错误",
                     "logged_in_user": request.session["logged_in_user"],
@@ -227,7 +230,7 @@ def settings_password(request):
                     "user_obj": user
                 })
 
-            user.password = form_new_password
+            user.password = encrypt(form_new_password)
             user.save()
             del request.session['logged_in_user']
             del request.session['logged_in_user_email']
