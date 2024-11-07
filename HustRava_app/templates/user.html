@@ -37,42 +37,56 @@
             {% endif %}
             <div class="margin"></div>
         </header>
-        <div id="main">
-            <div class="banner">
-                <h2>{{ user.name }}</h2>
-                <p>{{ user.bio }}</p>
-                <p title="{{ user.created_at }}">于{{ user.created_at|naturaltime }}加入</p>
+            <div id="main">
+                <div class="banner">
+                    <h2>{{ user.name }}</h2>
+                    <p>{{ user.bio }}</p>
+                    <p title="{{ user.created_at }}">于{{ user.created_at|naturaltime }}加入</p>
+                </div>
+                <div class="content">
+                    {% if posts %}
+                        <h3>{{ user.name }}发布的帖子</h3>
+                        <ul class="post-list">
+                            {% for post in posts %}
+                                <li class="flex">
+                                    <a href="/post/{{ post.id }}/"><b>{{ post.title }}</b></a>
+                                    <div class="header-spacer"></div>
+                                    <span>#{{ post.id }}</span>
+                                    <span><span title="{{ post.created_at }}">发布于{{ post.created_at|naturaltime }}</span></span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>
+                            <a href="/user/{{ user.email }}/"><b>{{ user.name }}</b></a>
+                            <span>还没有发过帖子哦！</span>
+                        </p>
+                    {% endif %}
+
+                    {% if comments %}
+                        <h3>{{ user.name }}发布的回复</h3>
+                        <ul class="comment-list">
+                            {% for comment in comments %}
+                                <li>
+                                    <a href="/user/{{ comment.author.email }}">{{ comment.author.name }}</a>
+                                    {% if comment.author == comment.post.author %}
+                                        <span class="text-blue">帖子作者</span>
+                                    {% endif %}
+                                    <span title="回复于{{ comment.created_at }}">{{ comment.created_at|naturaltime }}</span>
+                                    <span>在帖子</span><a href="/post/{{ comment.post.id }}">{{ comment.post.title }}</a><span>的回复</span>
+                                    <div class="hr"></div>
+                                    {{ comment.content|linebreaks }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>
+                            <a href="/user/{{ user.email }}/"><b>{{ user.name }}</b></a>
+                            <span>还没有发过回复哦！</span>
+                        </p>
+                    {% endif %}
+                </div>
             </div>
-            <div class="content">
-                <h3>{{ user.name }}发布的帖子</h3>
-                <ul class="post-list">
-                    {% for post in posts %}
-                        <li class="flex">
-                            <a href="/post/{{ post.id }}/"><b>{{ post.title }}</b></a>
-                            <span style="color: #888; font-size: 14px;" title="{{ user.bio }}">{{ user.bio|slice:":30" }}{% if user.bio|length > 30 %}…{% endif %}</span>
-                            <div class="header-spacer"></div>
-                            <span>#{{ post.id }}</span>
-                            <span><span title="{{ post.created_at }}">发布于{{ post.created_at|naturaltime }}</span></span>
-                        </li>
-                    {% endfor %}
-                </ul>
-                <h3>{{ user.name }}发布的评论</h3>
-                <ul class="comment-list">
-                    {% for comment in comments %}
-                        <li>
-                            <a href="/user/{{ comment.author.name }}">{{ comment.author.name }}</a>
-                            {% if comment.author == comment.post.auther %}
-                                <span class="text-blue">帖子作者</span>
-                            {% endif %}
-                            <span title="回复于{{ comment.created_at }}">{{ comment.created_at|naturaltime }}</span>
-                            <span>在帖子</span><a href="/post/{{ comment.post.id }}">{{ comment.post.title }}</a><span>的回复</span>
-                            <div class="hr"></div>
-                            {{ comment.content|linebreaks }}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
         <script src="{% static 'forum.js' %}"></script>
     </body>
 </html>

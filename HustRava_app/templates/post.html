@@ -41,7 +41,7 @@
             <div class="banner">
                 <h2>{{ post.title }}</h2>
                 <p>
-                    <a href="/user/{{ post.author }}">{{ post.author }}</a> <span title="{{ post.created_at }}">发布于{{ post.created_at|naturaltime }}</span>
+                    <a href="/user/{{ post.author.email }}">{{ post.author }}</a> <span title="{{ post.created_at }}">发布于{{ post.created_at|naturaltime }}</span>
                     {% if post.is_topped %}
                         <span class="text-red">已置顶</span>
                     {% endif %}

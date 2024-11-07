@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-v3kq%r7gflq3rxgsyrt3xbsj!vvo56la3ts468z92e$uzu8ai1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*',
+    '10.12.54.216'
+]
 
 
 # Application definition
@@ -119,6 +122,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'  #别名，用于在其他py文件（尤其是views.py）中引用静态文件
 STATICFILES_DIRS = [os.path.join(BASE_DIR,'HustRava_app','static')] #静态文件位置
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') #静态文件收集位置
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
