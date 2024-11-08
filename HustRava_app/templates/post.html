@@ -50,7 +50,7 @@
             <div class="content">
                 <ul class="post-list">
                     <li>
-                        {{ post.content|linebreaks }}
+                        <div class="post-content" data-markdown="{{ post.content|escape }}"></div>
                     </li>
                     <h3>{{ comments|length }}条回复</h3>
                     {% for comment in comments %}
@@ -76,5 +76,17 @@
             </div>
         </div>
         <script src="{% static 'forum.js' %}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.0/marked.min.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const postContents = document.querySelectorAll('.post-content');
+
+                postContents.forEach(postContent => {
+                    const markdownText = postContent.getAttribute('data-markdown');
+                    const htmlContent = marked.parse(markdownText);
+                    postContent.innerHTML = htmlContent;
+                });
+            });
+        </script>
     </body>
 </html>
