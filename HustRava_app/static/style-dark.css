@@ -41,14 +41,16 @@ body.dark-mode .dropdown-content div:hover {
 body.dark-mode .dropdown-content div:active {
     background-color: #505055;
 }
-body.dark-mode input[type="text"], 
+body.dark-mode input[type="text"],
+body.dark-mode input[type="email"],
 body.dark-mode textarea,
 body.dark-mode input[type="password"] {
     background-color: transparent;
     color: white;
     border-color: #808085;
 }
-body.dark-mode input[type="text"]:hover, 
+body.dark-mode input[type="text"]:hover,
+body.dark-mode input[type="email"]:hover,
 body.dark-mode textarea:hover,
 body.dark-mode input[type="password"]:hover {
     border-color: #448AFF;
