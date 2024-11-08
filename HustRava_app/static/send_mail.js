@@ -1,5 +1,6 @@
 $(document).ready(function() {
-    $('#send_captcha').click(function(e) {
+    $('.send_captcha_btn').click(function(e) {
+        console.log('send_captcha_btn clicked');
         e.preventDefault();
         const email = $('#user_email').val();
         const csrfToken = $('#csrf_token').val();  // 从隐藏字段获取 CSRF Token

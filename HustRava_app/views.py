@@ -67,12 +67,11 @@ def register(request):
         return redirect('/login/')
 
 def send_captcha(request):
+    print("call")
     if request.method == 'POST':
         form_email = request.POST.get('user_email')
         print(form_email)
 
-        if User.objects.filter(email=form_email).first():
-            return JsonResponse({'message': '用户已存在'}, status=200)
         if not form_email:
             return JsonResponse({'message': '请填写邮箱'}, status=200)
         if not re.match(EMAIL_REGEX, form_email):
@@ -82,7 +81,7 @@ def send_captcha(request):
         cache_key = f'captcha_{form_email}'
         cache.set(cache_key, captcha, timeout=300)  # 验证码有效期5分钟
         try:
-            send_mail(to_addr=form_email, subject='HustRava注册验证码', body='您的验证码为: ' + captcha)
+            send_mail(to_addr=form_email, subject='HustRava验证码', body='您的验证码为: ' + captcha)
         except Exception as e:
             return JsonResponse({'error': '发送失败'}, status=500)
         return JsonResponse({'message': '验证码已发送'}, status=200)
@@ -243,6 +242,7 @@ def settings_password(request):
         form_original_password = request.POST.get('original_password')
         form_new_password = request.POST.get('new_password')
         form_new_password_confirm = request.POST.get('new_password_confirm')
+        form_verify_code = request.POST.get('verify_code')
 
         if "logged_in_user" in request.session:
             user = get_object_or_404(User, email = request.session["logged_in_user_email"])
@@ -258,6 +258,18 @@ def settings_password(request):
                 return render(request, 'settings_password.html', {
                     "error": "两次输入的密码不一致",
                     "logged_in_user": request.session["logged_in_user"],
+                    "logged_in_user_email": request.session["logged_in_user_email"],
+                    "user_obj": user
+                })
+            cache_key = f'captcha_'+request.session["logged_in_user_email"]
+            stored_verify_code = cache.get(cache_key)
+            if stored_verify_code and stored_verify_code == form_verify_code:
+                cache.delete(stored_verify_code)  # 验证成功后删除验证码
+            else:
+                return render(request, 'settings_password.html', {
+                    "error": "验证码错误",
+                    "logged_in_user": request.session["logged_in_user"],
+                    "logged_in_user_email": request.session["logged_in_user_email"],
                     "user_obj": user
                 })
 
