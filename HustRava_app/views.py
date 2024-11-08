@@ -1,13 +1,11 @@
-from hashlib import sha1
+import re
 
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import JsonResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.cache import cache
 from .models import User, Post, Comment, Tag, Notification, Bookmark, Follow
-from .util import encrypt,verify
+from .util import encrypt, verify, generate_verify_code, send_mail, EMAIL_REGEX
 
-# Create your views here.
-# docs: https://geek-docs.com/django/django-top-articles/1007100_django_creating_views.html
-# TODO:用来存放与client交流的函数，
 
 # Home view
 def index(request):
@@ -42,10 +40,12 @@ def register(request):
     if request.method == "GET":
         if "logged_in_user" in request.session:
             del request.session['logged_in_user']
+            del request.session['logged_in_user_email']
         return render(request, 'register.html')
     elif request.method == "POST":
         form_email = request.POST.get('user_email')
         form_password = request.POST.get('password')
+        form_verify_code = request.POST.get('verify_code')
 
         if form_email == "" or form_password == "":
             return render(request, 'register.html', {'error': '请填写完整信息'})
@@ -53,10 +53,36 @@ def register(request):
         if len(User.objects.filter(email = form_email)) != 0:
             return render(request, 'register.html', {'error': '用户已存在'})
 
+        # 验证码是否正确
+        cache_key = f'captcha_{form_email}'
+        stored_verify_code = cache.get(cache_key)
+        if stored_verify_code and stored_verify_code == form_verify_code:
+            cache.delete(stored_verify_code)  # 验证成功后删除验证码
+        else:
+            return render(request, 'register.html', {'error': '验证码错误'})
+
         encrypted_password = encrypt(form_password)
         user = User(email = form_email, password = encrypted_password)
         user.save()
         return redirect('/login/')
+
+def send_captcha(request):
+    if request.method == 'POST':
+        form_email = request.POST.get('user_email')
+
+        if not form_email:
+            return JsonResponse({'error': '请填写邮箱'}, status=400)
+        if not re.match(EMAIL_REGEX, form_email):
+            return JsonResponse({'error': '邮箱格式不正确'}, status=400)
+
+        captcha = generate_verify_code()
+        cache_key = f'captcha_{form_email}'
+        cache.set(cache_key, captcha, timeout=300)  # 验证码有效期5分钟
+        send_mail(to_addr=form_email, subject='HustRava注册验证码', body='您的验证码为: ' + captcha)
+
+        return JsonResponse({'message': '验证码已发送'}, status=200)
+    else:
+        return JsonResponse({'error': '无效请求'}, status=400)
 
 def login(request):
     """ 登录 GET/POST """
