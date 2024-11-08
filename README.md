@@ -35,6 +35,7 @@ wheel              0.44.0
 1.  cd software-engineering
 2.  python manage.py makemigrations
 3.  python manage.py migrate
+4.  python manage.py createcachetable my_cache_table
 ```
 #### 本地部署运行
 ```shell

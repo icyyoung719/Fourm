@@ -69,20 +69,25 @@ def register(request):
 def send_captcha(request):
     if request.method == 'POST':
         form_email = request.POST.get('user_email')
+        print(form_email)
 
+        if User.objects.filter(email=form_email).first():
+            return JsonResponse({'message': '用户已存在'}, status=200)
         if not form_email:
-            return JsonResponse({'error': '请填写邮箱'}, status=400)
+            return JsonResponse({'message': '请填写邮箱'}, status=200)
         if not re.match(EMAIL_REGEX, form_email):
-            return JsonResponse({'error': '邮箱格式不正确'}, status=400)
+            return JsonResponse({'message': '邮箱格式不正确'}, status=200)
 
         captcha = generate_verify_code()
         cache_key = f'captcha_{form_email}'
         cache.set(cache_key, captcha, timeout=300)  # 验证码有效期5分钟
-        send_mail(to_addr=form_email, subject='HustRava注册验证码', body='您的验证码为: ' + captcha)
-
+        try:
+            send_mail(to_addr=form_email, subject='HustRava注册验证码', body='您的验证码为: ' + captcha)
+        except Exception as e:
+            return JsonResponse({'error': '发送失败'}, status=500)
         return JsonResponse({'message': '验证码已发送'}, status=200)
     else:
-        return JsonResponse({'error': '无效请求'}, status=400)
+        return JsonResponse({'message': '无效请求'}, status=400)
 
 def login(request):
     """ 登录 GET/POST """
