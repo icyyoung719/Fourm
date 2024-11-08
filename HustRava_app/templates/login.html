@@ -49,9 +49,9 @@
                 <form action="/login/" method="post">
                     {% csrf_token %}
                     <label for="user_email">用户邮箱</label>
-                    <input type="text" name="user_email" id="user_email" />
+                    <input type="text" name="user_email" id="user_email" placeholder="请输入邮箱" />
                     <label for="password">密码</label>
-                    <input type="password" name="password" id="password" />
+                    <input type="password" name="password" id="password" placeholder="请输入密码" />
                     <input type="submit" value="登录" />
                 </form>
             </div>

@@ -51,8 +51,19 @@ input[type="text"], input[type="password"], input[type="email"], textarea {
     border: 1px solid #82B1FF;
     border-radius: 3px;
     outline: none;
-    transition: border-color 0.3s ease,
-                box-shadow 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    /* 设置占位符文本的颜色 */
+    ::placeholder {
+        color: #999; /* 浅灰色 */
+        opacity: 1; /* Firefox */
+    }
+    /* 兼容不同浏览器的占位符样式 */
+    :-ms-input-placeholder { /* Internet Explorer 10-11 */
+        color: #999;
+    }
+    ::-ms-input-placeholder { /* Microsoft Edge */
+        color: #999;
+    }
 }
 input[type="text"]:hover, input[type="password"]:hover, input[type="email"]:hover, textarea:hover {
     border-color: #448AFF;
