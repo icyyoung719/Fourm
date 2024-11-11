@@ -188,13 +188,24 @@
 </head>
 <body>
 
-    <header class="header">
-        <a href="/" class="header-title">Hustrava  ---专业运动交流社区</a>
-        <div class="header-spacer"></div>
+    <header class="header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
+    <!-- 左侧标题 -->
+    <a href="/" class="header-title" style="flex-shrink: 0;">Hustrava  ---专业运动交流社区</a>
 
+    <!-- 中间按钮组 -->
+    <div class="header-buttons" style="display: flex; justify-content: center; gap: 20px; flex-grow: 1;">
+        <a href="/cycling-routes/" class="a-button">
+            <button class="button-custom">骑行路线分享</button>
+        </a>
+        <a href="/training-plans/" class="a-button">
+            <button class="button-custom">训练计划参考</button>
+        </a>
+    </div>
+
+    <!-- 右侧按钮组 -->
+    <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
         <div class="search-box">
-            <input type="text" placeholder="搜索帖子"
-                   style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+            <input type="text" placeholder="搜索帖子" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
         </div>
 
         {% if logged_in_user %}
@@ -215,7 +226,37 @@
             <a href="/login/" class="a-button"><button class="button-white">登录</button></a>
             <a href="/register/" class="a-button"><button>注册</button></a>
         {% endif %}
-    </header>
+    </div>
+</header>
+
+<style>
+    /* 按钮的自定义样式 */
+    .button-custom {
+        font-weight: bold;                  /* 加粗字体 */
+        color: black;                       /* 黑色字体 */
+        background-color: rgba(0, 0, 0, 0.1); /* 半透明背景色 */
+        border: 2px solid rgba(0, 0, 0, 0.3); /* 边框 */
+        padding: 10px 20px;                 /* 按钮内边距 */
+        border-radius: 5px;                 /* 圆角边框 */
+        cursor: pointer;                   /* 鼠标悬停时显示为点击状态 */
+        transition: background-color 0.3s, transform 0.3s; /* 平滑过渡效果 */
+    }
+
+    /* 鼠标悬停时按钮效果 */
+    .button-custom:hover {
+        background-color: rgba(0, 0, 0, 0.2); /* 悬停时加深背景透明度 */
+        transform: translateY(-3px);           /* 按钮轻微上移，增加点击感 */
+    }
+
+    /* 按钮点击时效果 */
+    .button-custom:active {
+        transform: translateY(1px);            /* 点击时稍微下沉，模拟按压效果 */
+    }
+</style>
+
+
+
+
 
     <div id="main">
         <div class="sidebar">
