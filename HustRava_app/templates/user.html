@@ -10,6 +10,31 @@
         <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
         <link rel="stylesheet" type="text/css" href="{% static 'style-forum.css' %}" />
         <link rel="stylesheet" type="text/css" href="{% static 'style-dark.css' %}" />
+		<style>
+				ul.navbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+ul.navbar li {
+    float: left;
+}
+
+ul.navbar li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+ul.navbar li a:hover {
+    background-color: #111;
+}
+		</style>
     </head>
     <body>
         <header class="header">
@@ -39,34 +64,43 @@
             <div class="margin"></div>
         </header>
             <div id="main">
-                <div class="banner">
+                <div class="banner" style="display: flex; align-items: center;">
+					<img src="path/to/your/image.jpg" alt="用户头像" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
                     <h2>{{ user.name }}</h2>
+					</div>
+				<div  class="banner">
                     <p>{{ user.bio }}</p>
                     <p title="{{ user.created_at }}">于{{ user.created_at|naturaltime }}加入</p>
                 </div>
+			  <div>
+				<ul class="navbar"> 
+				  <li><a href="#section1">发布的帖子</a></li>
+						<li><a href="#reply">发布的回复</a></li>
+				</ul>
+				<br>	
+				</div>
                 <div class="content">
                     {% if posts %}
+						<section id="section1">
                         <h3>{{ user.name }}发布的帖子</h3>
                         <ul class="post-list">
                             {% for post in posts %}
-                                <li class="flex">
-                                    <a href="/post/{{ post.id }}/"><b>{{ post.title }}</b></a>
-                                    <div class="header-spacer"></div>
+                                <li class="flex"><a href="/post/{{ post.id }}/"><strong>{{ post.title }}</strong></a>
+                                  <div class="header-spacer"></div>
                                     <span>#{{ post.id }}</span>
                                     <span><span title="{{ post.created_at }}">发布于{{ post.created_at|naturaltime }}</span></span>
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p>
-                            <a href="/user/{{ user.email }}/"><b>{{ user.name }}</b></a>
-                            <span>还没有发过帖子哦！</span>
-                        </p>
+                        <p> <a href="/user/{{ user.email }}/"><strong>{{ user.name }}</strong></a> <span>还没有发过帖子哦！</span> </p>
+                        </section>
                     {% endif %}
 
                     {% if comments %}
+						<sectiom id="reply">
                         <h3>{{ user.name }}发布的回复</h3>
-                        <ul class="comment-list">
+                  <ul class="comment-list">
                             {% for comment in comments %}
                                 <li>
                                     <a href="/user/{{ comment.author.email }}">{{ comment.author.name }}</a>
@@ -85,9 +119,10 @@
                             <a href="/user/{{ user.email }}/"><b>{{ user.name }}</b></a>
                             <span>还没有发过回复哦！</span>
                         </p>
+						</section>
                     {% endif %}
-                </div>
-            </div>
+              </div>
+    </div>
         <script src="{% static 'forum.js' %}"></script>
     </body>
 </html>
