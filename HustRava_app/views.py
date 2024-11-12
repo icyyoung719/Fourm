@@ -299,9 +299,10 @@ def settings_bio(request):
             user.bio = form_bio
             user.name = form_name
             user.save()
+            request.session['logged_in_user'] = user.name
 
             return render(request, 'settings_bio.html', {
-                "logged_in_user": request.session["logged_in_user"],
+                "logged_in_user": user.name,
                 "logged_in_user_email": request.session["logged_in_user_email"],
                 "user_obj": get_object_or_404(User, email = request.session["logged_in_user_email"])
             })
@@ -341,8 +342,6 @@ def find_password(request):
         user.save()
         return redirect('/login/')
 
-# views.py
-from django.shortcuts import render
 
 def route(request):
     if request.method == "GET":
