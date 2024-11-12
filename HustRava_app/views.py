@@ -70,7 +70,6 @@ def send_captcha(request):
     print("call")
     if request.method == 'POST':
         form_email = request.POST.get('user_email')
-        print(form_email)
 
         if not form_email:
             return JsonResponse({'message': '请填写邮箱'}, status=200)
@@ -293,10 +292,51 @@ def settings_bio(request):
             return redirect('/login/')
     elif request.method == "POST":
         form_bio = request.POST.get('bio')
+        form_name = request.POST.get('name')
 
         if "logged_in_user" in request.session:
             user = get_object_or_404(User, email = request.session["logged_in_user_email"])
             user.bio = form_bio
+            user.name = form_name
             user.save()
 
+            return render(request, 'settings_bio.html', {
+                "logged_in_user": request.session["logged_in_user"],
+                "logged_in_user_email": request.session["logged_in_user_email"],
+                "user_obj": get_object_or_404(User, email = request.session["logged_in_user_email"])
+            })
+
         return redirect('/settings/bio/')
+
+def find_password(request):
+    """ 找回密码 GET/POST """
+    if request.method == "GET":
+        if "logged_in_user" in request.session:
+            del request.session['logged_in_user']
+            del request.session['logged_in_user_email']
+        return render(request, 'find_password.html')
+    elif request.method == "POST":
+        form_email = request.POST.get('user_email')
+        form_password = request.POST.get('password')
+        form_verify_code = request.POST.get('verify_code')
+
+        if form_email == "" or form_password == "":
+            return render(request, 'find_password.html', {'error': '请填写完整信息'})
+
+        user = User.objects.filter(email = form_email).first()
+
+        if not user:
+            return render(request, 'find_password.html', {'error': '用户不存在，请输入正确的邮箱'})
+
+        # 验证码是否正确
+        cache_key = f'captcha_{form_email}'
+        stored_verify_code = cache.get(cache_key)
+        if stored_verify_code and stored_verify_code == form_verify_code:
+            cache.delete(stored_verify_code)  # 验证成功后删除验证码
+        else:
+            return render(request, 'find_password.html', {'error': '验证码错误'})
+
+        encrypted_password = encrypt(form_password)
+        user.password = encrypted_password
+        user.save()
+        return redirect('/login/')
