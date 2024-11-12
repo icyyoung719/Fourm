@@ -11,29 +11,29 @@
         <link rel="stylesheet" type="text/css" href="{% static 'style-forum.css' %}" />
         <link rel="stylesheet" type="text/css" href="{% static 'style-dark.css' %}" />
 		<style>
-				ul.navbar {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #333;
-}
+			ul.navbar {
+    			list-style-type: none;
+    			margin: 0;
+    			padding: 0;
+    			overflow: hidden;
+    			background-color: #ADD8E6;
+			}
 
-ul.navbar li {
-    float: left;
-}
+			ul.navbar li {
+    			float:LEFT;
+			}
 
-ul.navbar li a {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-}
+			ul.navbar li a {
+    			display: block;
+    			color: black;
+  		 		text-align: center;
+    			padding: 14px 16px;
+    			text-decoration: none;
+			}
 
-ul.navbar li a:hover {
-    background-color: #111;
-}
+			ul.navbar li a:hover {
+    			background-color: #2A748C;
+			}
 		</style>
     </head>
     <body>
@@ -65,7 +65,7 @@ ul.navbar li a:hover {
         </header>
             <div id="main">
                 <div class="banner" style="display: flex; align-items: center;">
-					<img src=""../static/images/user.jpg" alt="用户头像" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
+					<img src="../static/images/user.jpg" alt="用户头像" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 10px;">
                     <h2>{{ user.name }}</h2>
 					</div>
 				<div  class="banner">
@@ -74,7 +74,7 @@ ul.navbar li a:hover {
                 </div>
 			  <div>
 				<ul class="navbar"> 
-				  <li><a href="#section1">发布的帖子</a></li>
+				 		<li><a href="#section1">发布的帖子</a></li>
 						<li><a href="#reply">发布的回复</a></li>
 				</ul>
 				<br>	
