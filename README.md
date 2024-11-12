@@ -42,7 +42,7 @@ wheel              0.44.0
 1.  确保software-engineering/settings.py中的DEBUG为True
 2.  python manage.py runserver
 ```
-#### 服务器部署(未完全实现)
+#### 服务器部署(未完全实现)python manage.py runserver
 1.  确保software-engineering/settings.py中的DEBUG为False
 2.  python manage.py runserver 0.0.0.0:8000 --insecure
 3.  使用cmd命令行输入：ipconfig ，查看本机ip（一般为无线局域网适配器 WLAN:的ipv4地址）
