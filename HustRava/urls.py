@@ -38,6 +38,7 @@ urlpatterns = [
     path('user/<str:user_email>/', views.user, name="user"),                     # 用户 GET
     path('logout/', views.logout, name="logout"),                               # 退出登录 GET
     path('users/', views.users, name="users"),                                  # 用户列表 GET
+    path('find_password/', views.find_password, name="find_password"),             # 找回密码 GET/POST
 
     path('settings/', views.settings, name="settings"),                         # 用户设置 GET
     path(
