@@ -48,7 +48,8 @@
                     {% csrf_token %}
                     <label for="bio">个人简介</label>
                     <textarea type="text" name="bio" id="bio" maxlength="256">{{ user_obj.bio }}</textarea>
-                
+                    <label for="bio">用户名</label>
+                    <textarea type="text" name="name" id="name" maxlength="30">{{ user_obj.name }}</textarea>
                     <input type="submit" value="保存" />
                 </form>
             </div>
