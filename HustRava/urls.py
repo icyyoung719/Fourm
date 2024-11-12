@@ -47,6 +47,6 @@ urlpatterns = [
         name="settings_password"
     ),                                                                          # 用户设置(密码) GET/POST
     path('settings/bio/', views.settings_bio, name="settings_bio"),             # 用户设置(个人简介) GET/POST
-
+    path('route/', views.route, name='route'),  # 为 route.html 添加路径
 ]
 

@@ -340,3 +340,10 @@ def find_password(request):
         user.password = encrypted_password
         user.save()
         return redirect('/login/')
+
+# views.py
+from django.shortcuts import render
+
+def route(request):
+    if request.method == "GET":
+        return render(request, 'route.html')

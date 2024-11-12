@@ -1,7 +1,6 @@
 {% load static %}
 {% load humanize %}
 
-<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -12,7 +11,7 @@ body {
 	background-size: cover;
 	background-position: left;
 	background-attachment: fixed;
-	background-image: url(../image/20200502201619_gijpf.jpg);
+	background-image: url("{% static 'images/image/image/bicycle/22.jpg' %}");
 }
 	.shouye {
 		width: 100px;
@@ -101,26 +100,28 @@ body {
 </head>
 
 <body>
-<div class="shouye">
-	<a href="../index.html">返回首页</a>
-	</div>
+<a href="/" class="a-button header-title">论坛</a>
+
 
 <div class="item1">
 	<div class="container">
 	  <div class="bottom">
-	          场景地图——天空王国
+	          骑行路线分享
 	</div>
 	  <div class="biaoti">
-	  晨岛 Isle of Dawn<br/>追随钟声，前往神殿
+	  路线1<br/>黄鹤楼之旅
 	  </div>
-      <div class="box">
-			<img src="../image/QQ图片20221125162108.jpg">
+      <div class="box" style="background-image: url("{ % static 'images/route1.jpg' %}");">
 			<div class="text">
 				<p>光遇游戏中初来乍到的各位旅人们将首先来到晨岛。这里有着神秘的山洞、暖粉色沙海、微泛的晨光，石壁上刻着的壁画诉说着王国的故事。在晨岛，我们学会走动，跳跃，飞翔，呼喊，这是我们的开端，空中王国的起源。 </p>
 		    <div class="lianjie">
 				<a href="https://www.bilibili.com/video/BV1Dq4y137YZ/?vd_source=66b48f063a4919447ba82efdaacafa2a" target="_blank">查看更多&gt;&gt;</a>
 			  </div>
 			</div>
+
+	  </div>
+
+
 
 	  </div>
 		<div class="biaoti">
