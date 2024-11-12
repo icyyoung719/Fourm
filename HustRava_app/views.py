@@ -292,11 +292,19 @@ def settings_bio(request):
             return redirect('/login/')
     elif request.method == "POST":
         form_bio = request.POST.get('bio')
+        form_name = request.POST.get('name')
 
         if "logged_in_user" in request.session:
             user = get_object_or_404(User, email = request.session["logged_in_user_email"])
             user.bio = form_bio
+            user.name = form_name
             user.save()
+
+            return render(request, 'settings_bio.html', {
+                "logged_in_user": request.session["logged_in_user"],
+                "logged_in_user_email": request.session["logged_in_user_email"],
+                "user_obj": get_object_or_404(User, email = request.session["logged_in_user_email"])
+            })
 
         return redirect('/settings/bio/')
 
