@@ -18,6 +18,15 @@ class User(models.Model):
         if not self.name:
             self.name = f"User_{self.email}"
         super().save(*args, **kwargs)
+    # convert to dict, to pass a user object to the front end
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "created_at": self.created_at.isoformat(),
+            "bio": self.bio,
+        }
     def __str__(self):
         return self.name
 

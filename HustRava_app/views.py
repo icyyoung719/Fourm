@@ -12,7 +12,7 @@ def index(request):
     """ 首页 GET """
     # 将所有帖子按时间排序
     posts = Post.objects.order_by('-created_at')
-    if "logged_in_user" in request.session:
+    if "user" in request.session:
         return render(request, 'index.html', {
             "posts": posts,
             "topped_posts": Post.objects.filter(is_topped=True).order_by('-created_at'),
@@ -21,8 +21,7 @@ def index(request):
                 "posts": Post.objects.count(),
                 "comments": Comment.objects.count()
             },
-            "logged_in_user": request.session["logged_in_user"],
-            "logged_in_user_email":request.session["logged_in_user_email"]
+            "user":request.session["user"]
         })
     else:
         return render(request, 'index.html', {
@@ -38,9 +37,8 @@ def index(request):
 def register(request):
     """ 注册 GET/POST """
     if request.method == "GET":
-        if "logged_in_user" in request.session:
-            del request.session['logged_in_user']
-            del request.session['logged_in_user_email']
+        if "user" in request.session:
+            del request.session['user']
         return render(request, 'register.html')
     elif request.method == "POST":
         form_email = request.POST.get('user_email')
@@ -91,9 +89,8 @@ def login(request):
     """ 登录 GET/POST """
     if request.method == "GET":
         # 如果已经登录, 就退出登录 (手动滑稽)
-        if "logged_in_user" in request.session:
-            del request.session['logged_in_user']
-            del request.session['logged_in_user_email']
+        if "user" in request.session:
+            del request.session['user']
         return render(request, 'login.html')
     elif request.method == "POST":
         form_email = request.POST.get('user_email')
@@ -102,8 +99,7 @@ def login(request):
 
         user = User.objects.filter(email=form_email, password=encrypted_password).first()
         if user:
-            request.session['logged_in_user'] = user.name
-            request.session['logged_in_user_email'] = user.email
+            request.session['user'] = user.to_dict()
             return redirect('/')
         else:
             return render(request, 'login.html', {'error': '用户名或密码错误'})
@@ -111,18 +107,18 @@ def login(request):
 def create(request):
     """ 创建帖子 GET/POST """
     if request.method == "GET":
-        if "logged_in_user" in request.session:
+        if "user" in request.session:
             return render(request, 'create.html', {
-                "logged_in_user": request.session["logged_in_user"],
-                "logged_in_user_email": request.session["logged_in_user_email"]
+                "user": request.session["user"]
             })
         else:
             return redirect('/login/')
     elif request.method == "POST":
-        if "logged_in_user" in request.session:
+        if "user" in request.session:
             post_title = request.POST.get('title')
             post_content = request.POST.get('content')
-            post_author = get_object_or_404(User, email = request.session["logged_in_user_email"])
+            user_data = request.session["user"]
+            post_author = get_object_or_404(User, email = request.session["user"]["email"])
 
             if post_title == "" or post_content == "":
                 return render(request, 'create.html', {
@@ -142,14 +138,13 @@ def post(request, post_id):
     try:
         post = Post.objects.get(id = post_id)
     except:
-        raise Http404("帖子pos不存在")
+        raise Http404("帖子不存在")
 
-    if "logged_in_user" in request.session:
+    if "user" in request.session:
         return render(request, 'post.html', {
             "post": post,
             "comments": Comment.objects.filter(post = post_id),
-            "logged_in_user": request.session["logged_in_user"],
-            "logged_in_user_email": request.session["logged_in_user_email"]
+            "user": request.session["user"]
         })
     else:
         return render(request, 'post.html', {
@@ -160,9 +155,9 @@ def post(request, post_id):
 def comment(request, post_id):
     """ 回复 POST """
     if request.method == "POST":
-        if "logged_in_user" in request.session:
+        if "user" in request.session:
             comment_content = request.POST.get('content')
-            comment_author = get_object_or_404(User, email = request.session["logged_in_user_email"])
+            comment_author = get_object_or_404(User, email = request.session["user"]["email"])
             comment_post = Post.objects.filter(id=post_id).first()
 
             if comment_content != "":
@@ -180,17 +175,16 @@ def user(request, user_email):
     except:
         raise Http404("用户不存在")
 
-    if "logged_in_user" in request.session:
+    if "user" in request.session:
         return render(request, 'user.html', {
-            'user': user,
+            'target_user': user,
             'posts': Post.objects.filter(author=user),
             'comments': Comment.objects.filter(author=user),
-            'logged_in_user': request.session["logged_in_user"],
-            'logged_in_user_email': request.session["logged_in_user_email"]
+            'user': request.session["user"]
         })
     else:
         return render(request, 'user.html', {
-            'user': user,
+            'target_user': user,
             'posts': Post.objects.filter(author=user),
             'comments': Comment.objects.filter(author=user),
         })
@@ -198,8 +192,7 @@ def user(request, user_email):
 def logout(request):
     """ 退出登录 GET """
     try:
-        del request.session['logged_in_user']
-        del request.session['logged_in_user_email']
+        del request.session['user']
     except KeyError:
         pass
     return redirect('/')
@@ -207,21 +200,19 @@ def logout(request):
 def users(request):
     """ 用户列表 GET """
     user_list = User.objects.order_by('created_at')
-    if "logged_in_user" in request.session:
+    if "user" in request.session:
         return render(request, 'users.html', {
             "user_list": user_list,
-            "logged_in_user": request.session["logged_in_user"],
-            "logged_in_user_email": request.session["logged_in_user_email"]
+            "user": request.session["user"]
         })
     else:
         return render(request, 'users.html', {"user_list": user_list})
 
 def settings(request):
     """ 用户设置 GET """
-    if "logged_in_user" in request.session:
+    if "user" in request.session:
         return render(request, 'settings.html', {
-            "logged_in_user": request.session["logged_in_user"],
-            "logged_in_user_email": request.session["logged_in_user_email"]
+            "user": request.session["user"]
         })
     else:
         return redirect('/login/')
@@ -229,11 +220,9 @@ def settings(request):
 def settings_password(request):
     """ 用户设置(密码) GET/POST """
     if request.method == "GET":
-        if "logged_in_user" in request.session:
+        if "user" in request.session:
             return render(request, 'settings_password.html', {
-                "logged_in_user": request.session["logged_in_user"],
-                "logged_in_user_email": request.session["logged_in_user_email"],
-                "user_obj": get_object_or_404(User, email = request.session["logged_in_user_email"])
+                "user": request.session["user"],
             })
         else:
             return redirect('/login/')
@@ -243,22 +232,19 @@ def settings_password(request):
         form_new_password_confirm = request.POST.get('new_password_confirm')
         form_verify_code = request.POST.get('verify_code')
 
-        if "logged_in_user" in request.session:
-            user = get_object_or_404(User, email = request.session["logged_in_user_email"])
+        if "user" in request.session:
+            user = get_object_or_404(User, email = request.session["user"]["email"])
 
             if not verify(form_original_password, user.password):
                 return render(request, 'settings_password.html', {
                     "error": "原密码错误",
-                    "logged_in_user": request.session["logged_in_user"],
-                    "logged_in_user_email": request.session["logged_in_user_email"],
+                    "user": request.session["user"],
                     "user_obj": user
                 })
             if form_new_password != form_new_password_confirm:
                 return render(request, 'settings_password.html', {
                     "error": "两次输入的密码不一致",
-                    "logged_in_user": request.session["logged_in_user"],
-                    "logged_in_user_email": request.session["logged_in_user_email"],
-                    "user_obj": user
+                    "user": request.session["user"],
                 })
             cache_key = f'captcha_'+request.session["logged_in_user_email"]
             stored_verify_code = cache.get(cache_key)
@@ -267,26 +253,21 @@ def settings_password(request):
             else:
                 return render(request, 'settings_password.html', {
                     "error": "验证码错误",
-                    "logged_in_user": request.session["logged_in_user"],
-                    "logged_in_user_email": request.session["logged_in_user_email"],
-                    "user_obj": user
+                    "user": request.session["user"],
                 })
 
             user.password = encrypt(form_new_password)
             user.save()
-            del request.session['logged_in_user']
-            del request.session['logged_in_user_email']
+            del request.session['user']
 
         return redirect('/login/')
 
 def settings_bio(request):
     """ 用户设置(个人简介) GET/POST """
     if request.method == "GET":
-        if "logged_in_user" in request.session:
+        if "user" in request.session:
             return render(request, 'settings_bio.html', {
-                "logged_in_user": request.session["logged_in_user"],
-                "logged_in_user_email": request.session["logged_in_user_email"],
-                "user_obj": get_object_or_404(User, email = request.session["logged_in_user_email"])
+                "user": request.session["user"]
             })
         else:
             return redirect('/login/')
@@ -294,17 +275,15 @@ def settings_bio(request):
         form_bio = request.POST.get('bio')
         form_name = request.POST.get('name')
 
-        if "logged_in_user" in request.session:
-            user = get_object_or_404(User, email = request.session["logged_in_user_email"])
+        if "user" in request.session:
+            user = get_object_or_404(User, email = request.session["user"]["email"])
             user.bio = form_bio
             user.name = form_name
             user.save()
-            request.session['logged_in_user'] = user.name
+            request.session['user'] = user.to_dict()
 
             return render(request, 'settings_bio.html', {
-                "logged_in_user": user.name,
-                "logged_in_user_email": request.session["logged_in_user_email"],
-                "user_obj": get_object_or_404(User, email = request.session["logged_in_user_email"])
+                "user": user.to_dict(),
             })
 
         return redirect('/settings/bio/')
@@ -312,9 +291,8 @@ def settings_bio(request):
 def find_password(request):
     """ 找回密码 GET/POST """
     if request.method == "GET":
-        if "logged_in_user" in request.session:
-            del request.session['logged_in_user']
-            del request.session['logged_in_user_email']
+        if "user" in request.session:
+            del request.session['user']
         return render(request, 'find_password.html')
     elif request.method == "POST":
         form_email = request.POST.get('user_email')

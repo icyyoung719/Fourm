@@ -209,12 +209,12 @@
             <input type="text" placeholder="搜索帖子" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
         </div>
 
-        {% if logged_in_user %}
+        {% if user %}
             <div class="dropdown">
-                <button class="button-dropdown">{{ logged_in_user }}</button>
+                <button class="button-dropdown">{{ user.name }}</button>
                 <div class="dropdown-content">
                     <ul>
-                        <li><a href="/user/{{ logged_in_user_email }}/">个人主页</a></li>
+                        <li><a href="/user/{{ user.email }}/">个人主页</a></li>
                         <li><a href="/settings/">设置</a></li>
                         <li><a onclick="toggle_theme()">切换主题</a></li>
                         <div class="hr" style="margin: 4% 3px;"></div>
