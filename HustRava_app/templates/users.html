@@ -24,8 +24,8 @@
                 <ul style="list-style: none;">
                     {% for user_in_list in user_list %}
                         <li>
-                            <a href="/user/{{ user.email }}/"><b>{{ user_in_list.name }}</b></a>
-                            <span title="{{ user.created_at }}">于{{ user_in_list.created_at|naturaltime }}加入</span>
+                            <a href="/user/{{ user_in_list.email }}/"><b>{{ user_in_list.name }}</b></a>
+                            <span title="{{ user_in_list.created_at }}">于{{ user_in_list.created_at|naturaltime }}加入</span>
                             <span style="color: #888; font-size: 14px;" title="{{ user_in_list.bio }}">{{ user_in_list.bio|slice:":60" }}{% if user_in_list.bio|length > 60 %}…{% endif %}</span>
                         </li>
                     {% endfor %}

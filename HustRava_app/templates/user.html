@@ -11,29 +11,42 @@
         <link rel="stylesheet" type="text/css" href="{% static 'style-forum.css' %}" />
         <link rel="stylesheet" type="text/css" href="{% static 'style-dark.css' %}" />
 		<style>
-			ul.navbar {
-    			list-style-type: none;
-    			margin: 0;
-    			padding: 0;
-    			overflow: hidden;
-    			background-color: #ADD8E6;
-			}
+            ul.navbar {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background-color: #ADD8E6;
+                display: flex;
+                justify-content: center;
+            }
 
-			ul.navbar li {
-    			float:LEFT;
-			}
+            ul.navbar li {
+                margin: 0 10px;
+            }
 
-			ul.navbar li a {
-    			display: block;
-    			color: black;
-  		 		text-align: center;
-    			padding: 14px 16px;
-    			text-decoration: none;
-			}
+            ul.navbar li a {
+                display: block;
+                color: black;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+                cursor: pointer;
+            }
 
-			ul.navbar li a:hover {
-    			background-color: #2A748C;
-			}
+            ul.navbar li a.active {
+                background-color: #2A748C;
+                color: white;
+                border-radius: 5px;
+            }
+
+            .content-section {
+                display: none;
+            }
+
+            .content-section.active {
+                display: block;
+            }
 		</style>
     </head>
     <body>
@@ -43,62 +56,73 @@
             <div class="banner" style="display: flex; align-items: center;">
                 <img src="{% static 'images/user.jpg' %}" alt="用户头像" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 10px;">
                 <h2>{{ target_user.name }}</h2>
-                </div>
-            <div  class="banner">
+            </div>
+            <div class="banner">
                 <p>{{ target_user.bio }}</p>
                 <p title="{{ target_user.created_at }}">于{{ target_user.created_at|naturaltime }}加入</p>
             </div>
             <div>
-            <ul class="navbar">
-                    <li><a href="#section1">发布的帖子</a></li>
-                    <li><a href="#reply">发布的回复</a></li>
-            </ul>
-            <br>
+                <ul class="navbar">
+                    <li><a href="#posts" class="tab-link" data-target="posts">发布的帖子</a></li>
+                    <li><a href="#comments" class="tab-link" data-target="comments">发布的回复</a></li>
+                </ul>
             </div>
-            <div class="content">
-                {% if posts %}
-                    <section id="section1">
-                    <h3>{{ target_user.name }}发布的帖子</h3>
-                    <ul class="post-list">
-                        {% for post in posts %}
-                            <li class="flex"><a href="/post/{{ post.id }}/"><strong>{{ post.title }}</strong></a>
-                              <div class="header-spacer"></div>
-                                <span>#{{ post.id }}</span>
-                                <span><span title="{{ post.created_at }}">发布于{{ post.created_at|naturaltime }}</span></span>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p> <a href="/user/{{ target_user.email }}/"><strong>{{ target_user.name }}</strong></a> <span>还没有发过帖子哦！</span> </p>
-                    </section>
-                {% endif %}
 
-                {% if comments %}
-                    <sectiom id="reply">
-                    <h3>{{ target_user.name }}发布的回复</h3>
-              <ul class="comment-list">
-                        {% for comment in comments %}
-                            <li>
-                                <a href="/user/{{ comment.author.email }}">{{ comment.author.name }}</a>
-                                {% if comment.author == comment.post.author %}
-                                    <span class="text-blue">帖子作者</span>
-                                {% endif %}
-                                <span title="回复于{{ comment.created_at }}">{{ comment.created_at|naturaltime }}</span>
-                                <span>在帖子</span><a href="/post/{{ comment.post.id }}">{{ comment.post.title }}</a><span>的回复</span>
-                                <div class="hr"></div>
-                                {{ comment.content|linebreaks }}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>
-                        <a href="/user/{{ target_user.email }}/"><b>{{ target_user.name }}</b></a>
-                        <span>还没有发过回复哦！</span>
-                    </p>
-                    </section>
-                {% endif %}
+            <!-- 内容区域 -->
+            <div class="content">
+                <!-- 发布的帖子 -->
+                <div id="posts" class="content-section active">
+                    {% if posts %}
+                        <h3>{{ target_user.name }}发布的帖子</h3>
+                        <ul class="post-list">
+                            {% for post in posts %}
+                                <li class="flex">
+                                    <a href="/post/{{ post.id }}/"><strong>{{ post.title }}</strong></a>
+                                    <div class="header-spacer"></div>
+                                    <span>#{{ post.id }}</span>
+                                    <span><span title="{{ post.created_at }}">发布于{{ post.created_at|naturaltime }}</span></span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>
+                            <a href="/user/{{ target_user.email }}/"><strong>{{ target_user.name }}</strong></a>
+                            <span>还没有发过帖子哦！</span>
+                        </p>
+                    {% endif %}
+                </div>
+
+                <!-- 发布的回复 -->
+                <div id="comments" class="content-section">
+                    {% if comments %}
+                        <h3>{{ target_user.name }}发布的回复</h3>
+                        <ul class="comment-list">
+                            {% for comment in comments %}
+                                <li>
+                                    <a href="/user/{{ comment.author.email }}">{{ comment.author.name }}</a>
+                                    {% if comment.author == comment.post.author %}
+                                        <span class="text-blue">帖子作者</span>
+                                    {% endif %}
+                                    <span title="回复于{{ comment.created_at }}">{{ comment.created_at|naturaltime }}</span>
+                                    <span>在帖子</span>
+                                    <a href="/post/{{ comment.post.id }}">{{ comment.post.title }}</a>
+                                    <span>的回复</span>
+                                    <div class="hr"></div>
+                                    {{ comment.content|linebreaks }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>
+                            <a href="/user/{{ target_user.email }}/"><b>{{ target_user.name }}</b></a>
+                            <span>还没有发过回复哦！</span>
+                        </p>
+                    {% endif %}
+                </div>
             </div>
         </div>
+
+        <script src="{% static 'tab-switch.js' %}"></script>
         <script src="{% static 'forum.js' %}"></script>
     </body>
 </html>
