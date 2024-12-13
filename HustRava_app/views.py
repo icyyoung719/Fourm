@@ -24,7 +24,9 @@ def index(request):
             "user":request.session["user"]
         })
     else:
+        print("index: user not exist")
         return render(request, 'index.html', {
+            "user": request.session.get("user", None),  # 确保总是有"user"键
             "posts": posts,
             "stats": {
                 "users": User.objects.count(),
@@ -123,7 +125,7 @@ def create(request):
             if post_title == "" or post_content == "":
                 return render(request, 'create.html', {
                     "error": "请填写完整信息",
-                    "logged_in_user": request.session["logged_in_user"]
+                    "user": request.session["user"]
                 })
 
             post = Post(title=post_title, content=post_content, author=post_author)
@@ -148,6 +150,7 @@ def post(request, post_id):
         })
     else:
         return render(request, 'post.html', {
+            "user": request.session.get("user", None),
             "post": post,
             "comments": Comment.objects.filter(post = post_id)
         })
@@ -184,6 +187,7 @@ def user(request, user_email):
         })
     else:
         return render(request, 'user.html', {
+            "user": request.session.get("user", None),
             'target_user': user,
             'posts': Post.objects.filter(author=user),
             'comments': Comment.objects.filter(author=user),
@@ -194,7 +198,7 @@ def logout(request):
     try:
         del request.session['user']
     except KeyError:
-        pass
+        print("KeyError: user")
     return redirect('/')
 
 def users(request):
@@ -206,7 +210,10 @@ def users(request):
             "user": request.session["user"]
         })
     else:
-        return render(request, 'users.html', {"user_list": user_list})
+        return render(request, 'users.html', {
+            "user_list": user_list,
+            "user": request.session.get("user", None)
+        })
 
 def settings(request):
     """ 用户设置 GET """
@@ -246,7 +253,7 @@ def settings_password(request):
                     "error": "两次输入的密码不一致",
                     "user": request.session["user"],
                 })
-            cache_key = f'captcha_'+request.session["logged_in_user_email"]
+            cache_key = f'captcha_'+request.session["user"]["email"]
             stored_verify_code = cache.get(cache_key)
             if stored_verify_code and stored_verify_code == form_verify_code:
                 cache.delete(stored_verify_code)  # 验证成功后删除验证码
