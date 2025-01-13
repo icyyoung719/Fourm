@@ -49,13 +49,12 @@ wheel              0.44.0
 3.  python manage.py runserver
 4.  在浏览器中输入：http://127.0.0.1:8000/admin/ 即可访问
 ```
-#### 服务器部署(未完全实现)
+#### 服务器部署
 1.  确保software-engineering/settings.py中的DEBUG为False
 2.  python manage.py runserver 0.0.0.0:8000 --insecure
 3.  使用cmd命令行输入：ipconfig ，查看本机ip（一般为无线局域网适配器 WLAN:的ipv4地址）
 4.  在浏览器中输入：http://本机ip:8000/ 即可访问
-5.  似乎需要安装 Nginx 和 Gunicorn才能真正的部署到公网？？？
-6.  参考： https://zhuanlan.zhihu.com/p/387533116
+
 
 #### 辅助工具
 1.  https://sqlitebrowser.org/dl/   用于下载查看数据库的工具
