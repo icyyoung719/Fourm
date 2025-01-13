@@ -10,7 +10,7 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'name', 'email', 'password' , 'created_at', 'bio']
+        fields = ['id', 'name', 'email' , 'created_at', 'bio']
         # 如果你想包括所有字段，可以使用 '__all__'
         # fields = '__all__'
         read_only_fields = ['created_at']  # 根据需要设置只读字段
