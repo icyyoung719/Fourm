@@ -1,5 +1,3 @@
-# 软件工程
-
 ### 介绍
 基于Django框架的项目，这里是服务器端代码，Android代码在[这里](https://github.com/icyyoung719/FourmAndroid/tree/master)
 
