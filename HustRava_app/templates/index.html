@@ -11,254 +11,17 @@
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <link rel="stylesheet" href="{% static 'style-forum.css' %}">
     <link rel="stylesheet" href="{% static 'style-dark.css' %}">
-    <style>
-        body {
-            background-color: #f4f6f9; /* 让背景色更接近知乎 */
-            font-family: "Arial", sans-serif;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-        body {
-            background-image: url("{% static 'images/image/image/hike/pexels-ozgomz-868097.jpg' %}");
-            background-size: cover;  /* 让背景图片覆盖整个屏幕 */
-            background-position: center;  /* 图片居中显示 */
-            background-repeat: no-repeat;  /* 图片不重复 */
-            height: 100vh;  /* 设置页面高度为100vh，确保背景覆盖整个页面 */
-            margin: 0;  /* 去除默认的页面外边距 */
-        }
-
-        /* Header */
-        /* Header */
-        .header {
-        background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
-        padding: 10px 30px;
-        border-bottom: 1px solid #ddd;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        }
-
-        .header-title {
-        font-size: 24px;
-        font-weight: bold;
-        color: #fff;  /* 设置文字颜色为不透明白色 */
-        text-decoration: none;
-        }
-
-
-        .header .dropdown {
-            position: relative;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: white;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .dropdown-content ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .dropdown-content li {
-            padding: 12px;
-        }
-
-        .dropdown-content li:hover {
-            background-color: #f2f2f2;
-        }
-
-        .button-dropdown {
-            background-color: transparent;
-            border: 1px solid #ccc;
-            padding: 8px 16px;
-            cursor: pointer;
-        }
-
-        .button-white {
-            background-color: #f7f7f7;
-            border: 1px solid #ccc;
-        }
-
-        /* Main Content */
-        #main {
-            display: flex;
-            justify-content: space-between;
-            margin: 30px;
-        }
-
-        /* Sidebar */
-.sidebar {
-    width: 300px;
-    background-color: rgba(0, 0, 0, 0.5); /* 黑色背景，50%透明度 */
-    padding: 80px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar a {
-    text-decoration: none;
-    color: #fff; /* 文字颜色设置为白色，确保在黑色背景下清晰可见 */
-    display: block;
-    margin-bottom: 5px;
-}
-
-.sidebar a:hover {
-    color: #0078d4; /* 悬停时文字颜色变为蓝色 */
-}
-
-.stats {
-    margin-top: 20px;
-    color: #fff; /* 设置 .stats 文字颜色为白色，确保文字不透明 */
-}
-
-.stats ul {
-    padding-left: 20px;
-}
-
-.stats li {
-    margin-bottom: 10px;
-    color: #fff; /* 确保每个列表项的文字颜色也是白色 */
-}
-
-.stats .title {
-    color: rgba(255, 255, 255, 1); /* 设置“统计”这两个字的颜色为白色且不透明 */
-}
-
-
-        /* Content */
-        .content {
-            width: 100%;
-            max-width: 800px;
-            margin-top:100px;
-        }
-
-        .topic-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .topic-list li {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .topic-list a {
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-            flex: 1;
-        }
-
-        .topic-list a:hover {
-            color: #0078d4;
-        }
-
-        .post-list li {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        /* Footer */
-        #footer {
-    background-color: transparent; /* 将背景色设置为透明 */
-    text-align: center;
-    padding: 20px;
-    border-top: 1px solid #ddd;
-    font-size: 14px;
-    color: #888;
-    margin-top: 200px;  /* 将 footer 固定在页面底部 */
-}
-
-    </style>
 </head>
 <body>
 
-    <header class="header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
-    <!-- 左侧标题 -->
-    <a href="/" class="header-title" style="flex-shrink: 0;">Hustrava  ---专业运动交流社区</a>
-
-    <!-- 中间按钮组 -->
-<div class="header-buttons" style="display: flex; justify-content: center; gap: 20px; flex-grow: 1;">
-    <a href="/route/" class="a-button">
-        <button class="button-custom">骑行路线分享</button>
-    </a>
-    <a href="/training/" class="a-button">
-        <button class="button-custom">训练计划参考</button>
-    </a>
-</div>
-
-
-    <!-- 右侧按钮组 -->
-    <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
-        <div class="search-box">
-            <input type="text" placeholder="搜索帖子" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-        </div>
-
-        {% if user %}
-            <div class="dropdown">
-                <button class="button-dropdown">{{ user.name }}</button>
-                <div class="dropdown-content">
-                    <ul>
-                        <li><a href="/user/{{ user.email }}/">个人主页</a></li>
-                        <li><a href="/settings/">设置</a></li>
-                        <li><a onclick="toggle_theme()">切换主题</a></li>
-                        <div class="hr" style="margin: 4% 3px;"></div>
-                        <li><a href="/logout/">退出登录</a></li>
-                    </ul>
-                </div>
-            </div>
-        {% else %}
-            <a onclick="toggle_theme()" style="cursor: pointer;">切换主题</a>
-            <a href="/login/" class="a-button"><button class="button-white">登录</button></a>
-            <a href="/register/" class="a-button"><button>注册</button></a>
-        {% endif %}
-    </div>
-</header>
-
-<style>
-    /* 按钮的自定义样式 */
-    .button-custom {
-        font-weight: bold;                  /* 加粗字体 */
-        color: black;                       /* 黑色字体 */
-        background-color: rgba(0, 0, 0, 0.1); /* 半透明背景色 */
-        border: 2px solid rgba(0, 0, 0, 0.3); /* 边框 */
-        padding: 10px 20px;                 /* 按钮内边距 */
-        border-radius: 5px;                 /* 圆角边框 */
-        cursor: pointer;                   /* 鼠标悬停时显示为点击状态 */
-        transition: background-color 0.3s, transform 0.3s; /* 平滑过渡效果 */
-    }
-
-    /* 鼠标悬停时按钮效果 */
-    .button-custom:hover {
-        background-color: rgba(0, 0, 0, 0.2); /* 悬停时加深背景透明度 */
-        transform: translateY(-3px);           /* 按钮轻微上移，增加点击感 */
-    }
-
-    /* 按钮点击时效果 */
-    .button-custom:active {
-        transform: translateY(1px);            /* 点击时稍微下沉，模拟按压效果 */
-    }
-</style>
-
-
-
-
-
+    {% include 'header.html' %}
+    <!-- 插入空行，避免覆盖元素 -->
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
     <div id="main">
         <div class="sidebar">
             <a href="/create/" class="a-button"><button>创建帖子</button></a>
@@ -271,7 +34,8 @@
                     <li>回复总数：{{ stats.comments }}</li>
                 </ul>
             </div>
-        </div>
+            </div>
+
 
         <div class="content">
             {% if topped_posts %}
@@ -302,10 +66,7 @@
                 <p>没有帖子</p>
             {% endif %}
         </div>
-    </div>
 
-    <div id="footer">
-        <p>© 2024 hustrava. All rights reserved.</p>
     </div>
 
     <script src="{% static 'forum.js' %}"></script>

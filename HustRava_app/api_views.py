@@ -1,6 +1,7 @@
 import re
 
 from django.http import JsonResponse, Http404
+from rest_framework import status
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.cache import cache
 from .models import User, Post, Comment
@@ -37,10 +38,10 @@ def register(request):
         form_verify_code = request.POST.get('verify_code')
 
         if not form_email or not form_password:
-            return JsonResponse({'error': '请填写完整信息'}, status=400)
+            return JsonResponse({'message': '请填写完整信息'}, status=400)
 
         if User.objects.filter(email=form_email).exists():
-            return JsonResponse({'error': '用户已存在'}, status=400)
+            return JsonResponse({'message': '用户已存在'}, status=400)
 
         cache_key = f'captcha_{form_email}'
         stored_verify_code = cache.get(cache_key)
@@ -51,7 +52,7 @@ def register(request):
             user.save()
             return JsonResponse({'message': '注册成功'})
         else:
-            return JsonResponse({'error': '验证码错误'}, status=400)
+            return JsonResponse({'message': '验证码错误'}, status=400)
 
 def send_captcha(request):
     """ API: Send captcha code """
@@ -70,7 +71,7 @@ def send_captcha(request):
             send_mail(to_addr=form_email, subject='HustRava验证码', body=f'您的验证码为: {captcha}')
             return JsonResponse({'message': '验证码已发送'})
         except Exception as e:
-            return JsonResponse({'error': '发送失败'}, status=500)
+            return JsonResponse({'message': '发送失败'}, status=500)
 
 def login(request):
     """ API: Login user """
@@ -85,7 +86,7 @@ def login(request):
             user_serialized = UserSerializer(user)
             return JsonResponse({'message': '登录成功', 'user': user_serialized.data})
         else:
-            return JsonResponse({'error': '用户名或密码错误'}, status=400)
+            return JsonResponse({'message': '用户名或密码错误'}, status=400)
 
 def create(request):
     """ API: Create a post """
@@ -96,13 +97,13 @@ def create(request):
             post_author = get_object_or_404(User, email=request.session["user"]["email"])
 
             if not post_title or not post_content:
-                return JsonResponse({'error': '请填写完整信息'}, status=400)
+                return JsonResponse({'message': '请填写完整信息'}, status=400)
 
             post = Post(title=post_title, content=post_content, author=post_author)
             post.save()
             return JsonResponse({'message': '帖子创建成功'})
         else:
-            return JsonResponse({'error': '请先登录'}, status=401)
+            return JsonResponse({'message': '请先登录'}, status=status.HTTP_401_UNAUTHORIZED)
 
 def post_detail(request, post_id):
     """ API: Get post details """
@@ -132,15 +133,15 @@ def comment(request, post_id):
             comment.save()
             return JsonResponse({'message': '评论成功'})
         else:
-            return JsonResponse({'error': '评论内容不能为空'}, status=400)
-    return JsonResponse({'error': '未登录'}, status=401)
+            return JsonResponse({'message': '评论内容不能为空'}, status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse({'message': '未登录'}, status=status.HTTP_401_UNAUTHORIZED)
 
 def user(request, user_email):
     """ 用户主界面 GET """
     try:
         user = User.objects.get(email=user_email)
     except User.DoesNotExist:
-        raise Http404("用户不存在")
+        return JsonResponse({'message': '用户不存在'}, status=status.HTTP_404_NOT_FOUND)
 
     posts = Post.objects.filter(author=user)
     comments = Comment.objects.filter(author=user)
@@ -176,10 +177,16 @@ def settings(request):
     if "user" in request.session:
         user_serialized = UserSerializer(request.session["user"])
         return JsonResponse({
-            "user": user_serialized.data
+            "user": user_serialized.data,
+            "status": "success"
         })
     else:
-        return redirect('/login/')
+        # 返回 JSON 响应，指示客户端需要重新登录
+        return JsonResponse({
+            "message": "Please log in.",
+            "redirect_url": "/login/",
+            "status": "unauthorized"
+        }, status=status.HTTP_401_UNAUTHORIZED)
     
 def settings_password(request):
     """ 用户设置(密码) GET/POST """
@@ -188,9 +195,12 @@ def settings_password(request):
             user_serialized = UserSerializer(request.session["user"])
             return JsonResponse({
                 "user": user_serialized.data
-            })
+            },status=status.HTTP_200_OK)
         else:
-            return redirect('/login/')
+            return JsonResponse({
+                "message": "Please log in.",
+                "redirect_url": "/login/"
+            },status=status.HTTP_401_UNAUTHORIZED)
     elif request.method == "POST":
         form_original_password = request.POST.get('original_password')
         form_new_password = request.POST.get('new_password')
@@ -202,14 +212,13 @@ def settings_password(request):
 
             if not verify(form_original_password, user.password):
                 return JsonResponse({
-                    "error": "原密码错误",
-                    "user": request.session["user"],
-                    "user_obj": UserSerializer(user).data
+                    "message": "原密码错误",
+                    "user":  UserSerializer(user).data,
                 }, status=400)
             if form_new_password != form_new_password_confirm:
                 return JsonResponse({
-                    "error": "两次输入的密码不一致",
-                    "user": request.session["user"],
+                    "message": "两次输入的密码不一致",
+                    "user": UserSerializer(user).data,
                 }, status=400)
             cache_key = f'captcha_{request.session["user"]["email"]}'
             stored_verify_code = cache.get(cache_key)
@@ -217,15 +226,18 @@ def settings_password(request):
                 cache.delete(stored_verify_code)  # 验证成功后删除验证码
             else:
                 return JsonResponse({
-                    "error": "验证码错误",
-                    "user": request.session["user"],
+                    "message": "验证码错误",
+                    "user": UserSerializer(user).data,
                 }, status=400)
 
             user.password = encrypt(form_new_password)
             user.save()
             del request.session['user']
 
-        return redirect('/login/')
+        return JsonResponse({
+            "message": "密码修改成功",
+            "redirect_url": "/login/"
+        },status=status.HTTP_200_OK)
 
 def settings_bio(request):
     """ 用户设置(个人简介) GET/POST """
@@ -234,9 +246,12 @@ def settings_bio(request):
             user_serialized = UserSerializer(request.session["user"])
             return JsonResponse({
                 "user": user_serialized.data
-            })
+            },status=status.HTTP_200_OK)
         else:
-            return redirect('/login/')
+            return JsonResponse({
+                "message": "Please log in.",
+                "redirect_url": "/login/"
+            },status=status.HTTP_401_UNAUTHORIZED)
     elif request.method == "POST":
         form_bio = request.POST.get('bio')
         form_name = request.POST.get('name')
@@ -246,32 +261,36 @@ def settings_bio(request):
             user.bio = form_bio
             user.name = form_name
             user.save()
-            request.session['user'] = user.to_dict()
+            user_serialized = UserSerializer(request.session["user"])
 
             return JsonResponse({
-                "user": user.to_dict()
-            })
+                "user": user_serialized.data
+            }, status=status.HTTP_200_OK)
 
-        return redirect('/settings/bio/')
+        return JsonResponse({
+            "message": "Please log in.",
+        }, status=status.HTTP_401_UNAUTHORIZED)
     
 def find_password(request):
     """ 找回密码 GET/POST """
     if request.method == "GET":
         if "user" in request.session:
             del request.session['user']
-        return JsonResponse({})
+        return JsonResponse({
+            "redirect_url": "/find_password/"
+        }, status=status.HTTP_200_OK)
     elif request.method == "POST":
         form_email = request.POST.get('user_email')
         form_password = request.POST.get('password')
         form_verify_code = request.POST.get('verify_code')
 
         if not form_email or not form_password:
-            return JsonResponse({'error': '请填写完整信息'}, status=400)
+            return JsonResponse({'message': '请填写完整信息'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.filter(email=form_email).first()
 
         if not user:
-            return JsonResponse({'error': '用户不存在，请输入正确的邮箱'}, status=400)
+            return JsonResponse({'message': '用户不存在，请输入正确的邮箱'}, status=status.HTTP_400_BAD_REQUEST)
 
         # 验证码是否正确
         cache_key = f'captcha_{form_email}'
@@ -279,13 +298,9 @@ def find_password(request):
         if stored_verify_code and stored_verify_code == form_verify_code:
             cache.delete(stored_verify_code)  # 验证成功后删除验证码
         else:
-            return JsonResponse({'error': '验证码错误'}, status=400)
+            return JsonResponse({'message': '验证码错误'}, status=status.HTTP_400_BAD_REQUEST)
 
         encrypted_password = encrypt(form_password)
         user.password = encrypted_password
         user.save()
-        return redirect('/login/')
-    
-def route(request):
-    if request.method == "GET":
-        return render(request, 'route.html')
+        return JsonResponse({'message': '密码找回成功'}, status=status.HTTP_200_OK)
