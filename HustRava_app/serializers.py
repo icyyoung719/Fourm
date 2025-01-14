@@ -16,12 +16,15 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at']  # 根据需要设置只读字段
 
 class PostSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True)  # 使用UserSerializer来序列化author
     class Meta:
         model = Post
         fields = ['id', 'title', 'content', 'created_at', 'author', 'like_nums', 'is_topped']
         read_only_fields = ['created_at', 'author']
 
 class CommentSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True)  # 使用UserSerializer来序列化author
+    post = PostSerializer(read_only=True)  # 使用PostSerializer来序列化post
     class Meta:
         model = Comment
         fields = ['id', 'content', 'created_at', 'author', 'post', 'like_nums']
